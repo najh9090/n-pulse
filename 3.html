@@ -134,11 +134,17 @@ function getLocation() {
     const status = document.getElementById("status");
 
     if (!navigator.geolocation) {
-        alert("المتصفح لا يدعم تحديد الموقع");
+        status.innerText = "❌ المتصفح لا يدعم تحديد الموقع";
         return;
     }
 
-    status.innerText = "⏳ جاري تحديد موقعك...";
+    // تحقق من HTTPS
+    if (location.protocol !== "https:" && location.hostname !== "localhost") {
+        status.innerText = "❌ لازم تشغل الموقع على HTTPS عشان يشتغل تحديد الموقع";
+        return;
+    }
+
+    status.innerText = "⏳ جاري طلب إذن الموقع...";
 
     navigator.geolocation.getCurrentPosition(
         function(position) {
@@ -147,7 +153,6 @@ function getLocation() {
 
             userLocation = `https://www.google.com/maps?q=${lat},${lon}`;
 
-            // إضافة الرابط داخل textarea تلقائياً
             const textarea = document.querySelector('[name="message"]');
             textarea.value += `\n📍 موقعي:\n${userLocation}\n`;
 
@@ -156,21 +161,21 @@ function getLocation() {
         function(error) {
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    status.innerText = "❌ تم رفض إذن الموقع";
+                    status.innerText = "❌ تم رفض الإذن. اذهب لإعدادات المتصفح للسماح بالوصول للموقع";
                     break;
                 case error.POSITION_UNAVAILABLE:
-                    status.innerText = "❌ الموقع غير متوفر";
+                    status.innerText = "❌ الموقع غير متوفر (شغل GPS)";
                     break;
                 case error.TIMEOUT:
                     status.innerText = "⏳ انتهى وقت تحديد الموقع";
                     break;
                 default:
-                    status.innerText = "❌ حدث خطأ";
+                    status.innerText = "❌ حدث خطأ غير معروف";
             }
         },
         {
             enableHighAccuracy: true,
-            timeout: 10000,
+            timeout: 15000,
             maximumAge: 0
         }
     );
