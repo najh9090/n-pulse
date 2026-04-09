@@ -84,6 +84,13 @@
         .location-btn {
             background: #0ea5e9;
         }
+
+        .status {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
     </style>
 </head>
 
@@ -105,14 +112,16 @@
         </div>
 
         <div class="form-group">
-            <label>تفاصيل موقعك (الإمارة - المنطقة - الشارع - البناية - الشقة)</label>
-            <textarea name="message"></textarea>
+            <label>تفاصيل موقعك</label>
+            <textarea name="message" placeholder="الإمارة - المنطقة - الشارع..."></textarea>
         </div>
 
-        <!-- 📍 زر تحديد الموقع -->
+        <!-- زر تحديد الموقع -->
         <button type="button" class="location-btn" onclick="getLocation()">
             📍 تحديد موقعي
         </button>
+
+        <div class="status" id="status"></div>
 
         <button type="submit">اطلب عبر واتساب</button>
     </form>
@@ -122,20 +131,49 @@
 let userLocation = "";
 
 function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            let lat = position.coords.latitude;
-            let lon = position.coords.longitude;
+    const status = document.getElementById("status");
+
+    if (!navigator.geolocation) {
+        alert("المتصفح لا يدعم تحديد الموقع");
+        return;
+    }
+
+    status.innerText = "⏳ جاري تحديد موقعك...";
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
 
             userLocation = `https://www.google.com/maps?q=${lat},${lon}`;
 
-            alert("تم تحديد موقعك بنجاح ✅");
-        }, function() {
-            alert("فشل تحديد الموقع ❌");
-        });
-    } else {
-        alert("المتصفح لا يدعم الموقع");
-    }
+            // إضافة الرابط داخل textarea تلقائياً
+            const textarea = document.querySelector('[name="message"]');
+            textarea.value += `\n📍 موقعي:\n${userLocation}\n`;
+
+            status.innerText = "✅ تم تحديد موقعك بنجاح";
+        },
+        function(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    status.innerText = "❌ تم رفض إذن الموقع";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    status.innerText = "❌ الموقع غير متوفر";
+                    break;
+                case error.TIMEOUT:
+                    status.innerText = "⏳ انتهى وقت تحديد الموقع";
+                    break;
+                default:
+                    status.innerText = "❌ حدث خطأ";
+            }
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
 }
 
 document.getElementById('contact-form').addEventListener('submit', function(event) {
@@ -145,7 +183,7 @@ document.getElementById('contact-form').addEventListener('submit', function(even
     const phone = document.querySelector('[name="user_phone"]').value;
     const details = document.querySelector('[name="message"]').value;
 
-    const message = `📦 *مجسم العملاق ايرن 15سم*
+    const message = `📦 *طلب جديد*
 
 👤 الاسم: ${name}
 📞 رقم الهاتف: ${phone}
