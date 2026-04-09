@@ -28,6 +28,44 @@ body {
     overflow-x: hidden;
 }
 
+/* نافذة التنبيه */
+.popup {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.popup-box {
+    background: #111;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    width: 90%;
+    max-width: 350px;
+    box-shadow: 0 0 20px #8a2be2;
+}
+
+.popup-box h3 {
+    margin-bottom: 15px;
+}
+
+.popup-box button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    background: #00f7ff;
+    color: black;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
 /* HEADER */
 header {
     display: flex;
@@ -87,7 +125,7 @@ nav a:hover {
     font-size: 14px;
 }
 
-/* 🛒 CART (مضاف فقط) */
+/* 🛒 CART */
 .cart {
     position: fixed;
     top: 80px;
@@ -157,49 +195,22 @@ nav a:hover {
     background: var(--secondary);
     color: black;
 }
-
-/* 📱 للجوال */
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    nav {
-        display: flex;
-        justify-content: center;
-    }
-
-    .hero h1 {
-        font-size: 32px;
-    }
-
-    .products {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .product-card img {
-        height: 180px;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero h1 {
-        font-size: 26px;
-    }
-
-    .products {
-        grid-template-columns: 1fr;
-    }
-
-    .btn {
-        width: 100%;
-    }
-}
 </style>
 </head>
 
 <body>
+
+<!-- 🔔 الرسالة -->
+<div class="popup" id="popup">
+    <div class="popup-box">
+        <h3>⚠️ تنبيه</h3>
+        <p>
+            هذا المتجر متوفر فقط داخل دولة الإمارات 🇦🇪<br><br>
+            في حال واجهتكم أي مشكلة نرجو التواصل معنا ❤️
+        </p>
+        <button onclick="closePopup()">موافق</button>
+    </div>
+</div>
 
 <header>
     <div class="logo">N-pulse</div>
@@ -209,7 +220,6 @@ nav a:hover {
     </nav>
 </header>
 
-<!-- 🛒 السلة (مضافة فقط) -->
 <div class="cart">
     🛒 السلة: <span id="cart-count">0</span>
     <div id="cart-items"></div>
@@ -228,12 +238,8 @@ nav a:hover {
         <img src="https://i.postimg.cc/v8Nkg07c/OIP.webp">
         <div class="product-info">
             <h3>مانجا بوروتو فصل 63 pdf</h3>
-            <p1>السعر:1دولار</p1><br><br>
-
-            <!-- زر السلة (مضاف) -->
+            <p>السعر:1$</p>
             <button class="btn" onclick="addToCart('بوروتو',1)">أضف للسلة</button><br><br>
-
-            <!-- زر الشراء الأصلي (ما لمسناه) -->
             <a href="1.html" class="btn">شراء</a>
         </div>
     </div>
@@ -241,32 +247,22 @@ nav a:hover {
     <div class="product-card">
         <img src="https://i.postimg.cc/C5Ymq6MC/2.jpg">
         <div class="product-info">
-            <h3>مانجا جوجتسو كايسن فصل 271 الاخير pdf</h3>
-            <p1>السعر:1دولار</p1><br><br>
-
+            <h3>مانجا جوجتسو كايسن فصل 271</h3>
+            <p>السعر:1$</p>
             <button class="btn" onclick="addToCart('جوجتسو',1)">أضف للسلة</button><br><br>
-
             <a href="2.html" class="btn">شراء</a>
         </div>
     </div>
 
-
-    <div class="product-card">
-        <img src="irn.jpeg">
-        <div class="product-info">
-            <h3>مجسم العملاق ايرن 15سم</h3>
-            <p1>السعر:54دولار</p1><br><br>
-
-            <button class="btn" onclick="addToCart('مجسم العملاق ايرن',54)">أضف للسلة</button><br><br>
-
-            <a href="3.html" class="btn">شراء</a>
-        </div>
-    </div>
-
-
 </section>
 
 <script>
+// إغلاق الرسالة
+function closePopup() {
+    document.getElementById("popup").style.display = "none";
+}
+
+// السلة
 let cart = [];
 
 function addToCart(name, price) {
