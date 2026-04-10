@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>N-pulse | Anime Store</title>
+<title>N-pulse | Store</title>
 
 <style>
 :root {
@@ -13,7 +12,6 @@
     --pink: #ff4ecd;
     --black: #0d0d0d;
     --white: #ffffff;
-    --transition: 0.3s;
 }
 
 * {
@@ -26,31 +24,34 @@ body {
     font-family: 'Segoe UI', sans-serif;
     background: var(--black);
     color: var(--white);
-    overflow-x: hidden;
 }
 
-/* نافذة التنبيه */
+/* 🔔 POPUP */
 .popup {
     position: fixed;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.7);
+    inset: 0;
+    background: rgba(0,0,0,0.8);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2000;
+    backdrop-filter: blur(6px);
 }
 
 .popup-box {
-    background: #111;
-    padding: 25px;
-    border-radius: 15px;
+    background: linear-gradient(145deg, #111, #1a1a1a);
+    padding: 30px;
+    border-radius: 20px;
     text-align: center;
     width: 90%;
     max-width: 350px;
-    box-shadow: 0 0 20px #8a2be2;
+    box-shadow: 0 0 30px #8a2be2;
+    animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
 
 .popup-box h3 {
@@ -59,11 +60,11 @@ body {
 
 .popup-box button {
     margin-top: 15px;
-    padding: 10px 20px;
+    padding: 10px 25px;
     border: none;
-    background: #00f7ff;
+    background: linear-gradient(45deg, #00f7ff, #8a2be2);
     color: black;
-    border-radius: 10px;
+    border-radius: 25px;
     cursor: pointer;
 }
 
@@ -72,30 +73,43 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 5%;
+    padding: 15px 6%;
     position: fixed;
     width: 100%;
     z-index: 1000;
     background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
 }
 
 .logo {
-    color: var(--pink);
+    font-size: 24px;
     font-weight: bold;
-    font-size: 22px;
+    background: linear-gradient(45deg, #ff4ecd, #00f7ff);
+    -webkit-background-clip: text;
+    color: transparent;
 }
 
 nav a {
-    margin: 0 8px;
-    color: var(--white);
+    margin: 0 10px;
+    color: white;
     text-decoration: none;
     font-size: 14px;
-    transition: var(--transition);
+    position: relative;
 }
 
-nav a:hover {
-    color: var(--secondary);
+nav a::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    right: 0;
+    width: 0%;
+    height: 2px;
+    background: var(--secondary);
+    transition: 0.3s;
+}
+
+nav a:hover::after {
+    width: 100%;
 }
 
 /* HERO */
@@ -105,10 +119,10 @@ nav a:hover {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 0 20px;
+    padding: 20px;
 
     background:
-    linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.85)),
+    linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)),
     url('https://i.postimg.cc/q72Kgdgd/wp6399419.png');
 
     background-size: cover;
@@ -116,53 +130,52 @@ nav a:hover {
 }
 
 .hero h1 {
-    font-size: 40px;
+    font-size: 45px;
+    margin-bottom: 10px;
     text-shadow: 0 0 20px #8a2be2, 0 0 40px #ff4ecd;
 }
 
 .hero p {
     color: var(--secondary);
-    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+/* BUTTON */
+.btn {
+    padding: 12px 28px;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(45deg, #8a2be2, #00f7ff);
+    color: black;
+    cursor: pointer;
     font-size: 14px;
+    transition: 0.3s;
 }
 
-/* 🛒 CART */
-.cart {
-    position: fixed;
-    top: 80px;
-    left: 10px;
-    background: #111;
-    padding: 10px;
-    border-radius: 10px;
-    width: 200px;
-    box-shadow: 0 0 10px rgba(0,255,255,0.2);
-    font-size: 12px;
-}
-
-#cart-items {
-    margin-top: 8px;
+.btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px #00f7ff;
 }
 
 /* PRODUCTS */
 .products {
-    padding: 60px 15px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 15px;
+    padding: 60px 20px;
     background: #0b0b0b;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+    gap: 20px;
 }
 
 .product-card {
     background: #111;
     border-radius: 15px;
     overflow: hidden;
-    transition: var(--transition);
-    box-shadow: 0 0 15px rgba(0,255,255,0.1);
+    transition: 0.3s;
 }
 
 .product-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 0 25px var(--primary);
+    transform: translateY(-8px);
+    box-shadow: 0 0 20px var(--primary);
 }
 
 .product-card img {
@@ -172,7 +185,7 @@ nav a:hover {
 }
 
 .product-info {
-    padding: 12px;
+    padding: 15px;
     text-align: center;
 }
 
@@ -181,34 +194,23 @@ nav a:hover {
     font-size: 14px;
 }
 
-.btn {
-    display: inline-block;
-    padding: 8px 18px;
-    border: 1px solid var(--secondary);
-    color: var(--secondary);
-    text-decoration: none;
-    font-size: 14px;
-    transition: var(--transition);
-    cursor: pointer;
-}
-
-.btn:hover {
-    background: var(--secondary);
-    color: black;
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 20px;
+    background: black;
+    color: #aaa;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔔 الرسالة -->
+<!-- 🔔 POPUP -->
 <div class="popup" id="popup">
     <div class="popup-box">
         <h3>⚠️ تنبيه</h3>
-        <p>
-            هذا المتجر متوفر فقط داخل دولة الإمارات 🇦🇪<br><br>
-            في حال واجهتكم أي مشكلة نرجو التواصل معنا ❤️
-        </p>
+        <p>المتجر متوفر داخل الإمارات فقط 🇦🇪</p>
         <button onclick="closePopup()">موافق</button>
     </div>
 </div>
@@ -216,91 +218,31 @@ nav a:hover {
 <header>
     <div class="logo">N-pulse</div>
     <nav>
-        <a href="#">المتجر</a>
+        <a href="index.html">أنمي</a>
+        <a href="index2.html">أفلام</a>
         <a href="t.html">تواصل</a>
     </nav>
 </header>
 
-<div class="cart">
-    🛒 السلة: <span id="cart-count">0</span>
-    <div id="cart-items"></div>
-</div>
-
 <section class="hero">
     <div>
-        <h1>عالم الأنمي</h1>
-        <p>أقوى المنتجات لمحبي الأنمي 🔥</p>
+        <h1>متجر الأنمي والأفلام 🔥</h1>
+        <p>أفضل المنتجات لعشاق الأنمي والأفلام</p>
+       <a href="index3.html"> <button class="btn">تسوق الآن</button></a>
     </div>
 </section>
 
 <section class="products">
-
-    <div class="product-card">
-        <img src="https://i.postimg.cc/v8Nkg07c/OIP.webp">
-        <div class="product-info">
-            <h3>مانجا بوروتو فصل 63 pdf</h3>
-            <p>السعر:1$</p>
-            <button class="btn" onclick="addToCart('بوروتو',1)">أضف للسلة</button><br><br>
-            <a href="1.html" class="btn">شراء</a>
-        </div>
-    </div>
-
-    <div class="product-card">
-        <img src="https://i.postimg.cc/C5Ymq6MC/2.jpg">
-        <div class="product-info">
-            <h3>مانجا جوجتسو كايسن فصل 271</h3>
-            <p>السعر:1$</p>
-            <button class="btn" onclick="addToCart('جوجتسو',1)">أضف للسلة</button><br><br>
-            <a href="2.html" class="btn">شراء</a>
-        </div>
-    </div>
-
-
-    <div class="product-card">
-        <img src="irn.jpeg">
-        <div class="product-info">
-            <h3>مجسم العملاقي ايرن 15 سم</h3>
-            <p>السعر:54$</p>
-            <button class="btn" onclick="addToCart('مجسم ايرن 15سم',54)">أضف للسلة</button><br><br>
-            <a href="3.html" class="btn">شراء</a>
-        </div>
-    </div>
-
+    <!-- تضيف منتجاتك هنا -->
 </section>
 
+<footer>
+    © 2026 N-pulse Store
+</footer>
+
 <script>
-// إغلاق الرسالة
 function closePopup() {
     document.getElementById("popup").style.display = "none";
-}
-
-// السلة
-let cart = [];
-
-function addToCart(name, price) {
-    cart.push({name, price});
-    updateCart();
-}
-
-function updateCart() {
-    let count = document.getElementById("cart-count");
-    let items = document.getElementById("cart-items");
-
-    count.innerText = cart.length;
-    items.innerHTML = "";
-
-    let total = 0;
-
-    cart.forEach(item => {
-        let div = document.createElement("div");
-        div.innerText = item.name + " - $" + item.price;
-        items.appendChild(div);
-        total += item.price;
-    });
-
-    let totalDiv = document.createElement("div");
-    totalDiv.innerHTML = "<hr>المجموع: $" + total;
-    items.appendChild(totalDiv);
 }
 </script>
 
