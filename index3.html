@@ -205,8 +205,9 @@ nav a:hover {
 <header>
     <div class="logo">N-pulse</div>
     <nav>
+        <a href="index.html">الصفحة الرئيسية</a>
         <a href="index2.html">افلام</a>
-        <a href="index.html">انمي</a>
+        <a href="index3.html">انمي</a>
         <a href="t.html">تواصل</a>
     </nav>
 </header>
@@ -229,8 +230,8 @@ nav a:hover {
         <img src="https://i.postimg.cc/v8Nkg07c/OIP.webp">
         <div class="product-info">
             <h3>مانجا بوروتو فصل 63 pdf</h3>
-            <p>السعر:1$</p>
-            <button class="btn" onclick="addToCart('بوروتو',1)">أضف للسلة</button><br><br>
+             <p>السعر:3درهم</p>
+            <button class="btn" onclick="addToCart('بوروتو',3)">أضف للسلة</button><br><br>
             <a href="1.html" class="btn">شراء</a>
         </div>
     </div>
@@ -239,8 +240,8 @@ nav a:hover {
         <img src="https://i.postimg.cc/C5Ymq6MC/2.jpg">
         <div class="product-info">
             <h3>مانجا جوجتسو كايسن فصل 271</h3>
-            <p>السعر:1$</p>
-            <button class="btn" onclick="addToCart('جوجتسو',1)">أضف للسلة</button><br><br>
+            <p>السعر:3درهم</p>
+            <button class="btn" onclick="addToCart('جوجتسو',3)">أضف للسلة</button><br><br>
             <a href="2.html" class="btn">شراء</a>
         </div>
     </div>
@@ -250,8 +251,8 @@ nav a:hover {
         <img src="irn.jpeg">
         <div class="product-info">
             <h3>مجسم العملاق ايرن 15 سم</h3>
-            <p>السعر:54$</p>
-            <button class="btn" onclick="addToCart('مجسم ايرن 15سم',54)">أضف للسلة</button><br><br>
+            <p>السعر:200درهم</p>
+            <button class="btn" onclick="addToCart('مجسم ايرن 15سم',200)">أضف للسلة</button><br><br>
             <a href="3.html" class="btn">شراء</a>
         </div>
     </div>
@@ -283,13 +284,13 @@ function updateCart() {
 
     cart.forEach(item => {
         let div = document.createElement("div");
-        div.innerText = item.name + " - $" + item.price;
+        div.innerText = item.name + " - درهم" + item.price;
         items.appendChild(div);
         total += item.price;
     });
 
     let totalDiv = document.createElement("div");
-    totalDiv.innerHTML = "<hr>المجموع: $" + total;
+    totalDiv.innerHTML = "<hr>المجموع: درهم" + total;
     items.appendChild(totalDiv);
 }
 </script>

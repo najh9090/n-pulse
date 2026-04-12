@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>تقييم الموقع</title>
+
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  direction: rtl;
+  background: #f5f5f5;
+}
+
+.container {
+  margin-top: 40px;
+}
+
+input, textarea {
+  padding: 10px;
+  width: 220px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px 20px;
+  cursor: pointer;
+  background: green;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.review {
+  background: white;
+  margin: 10px auto;
+  padding: 10px;
+  width: 300px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #ccc;
+}
+</style>
+
+</head>
+<body>
+
+<h2>⭐ تقييم الموقع</h2>
+
+<div class="container">
+
+  <input type="number" id="rating" min="1" max="10" placeholder="التقييم من 1 إلى 10">
+
+  <br>
+
+  <textarea id="comment" placeholder="اكتب تعليقك"></textarea>
+
+  <br>
+
+  <button id="sendBtn">إرسال</button>
+
+</div>
+
+<h3>التقييمات</h3>
+<div id="reviews"></div>
+
+<script>
+const API = "http://localhost:3000";
+
+// إرسال التقييم
+document.getElementById("sendBtn").addEventListener("click", async function () {
+
+  let rating = document.getElementById("rating").value;
+  let comment = document.getElementById("comment").value;
+
+  if (!rating || rating < 1 || rating > 10) {
+    alert("اكتب تقييم من 1 إلى 10");
+    return;
+  }
+
+  try {
+    await fetch(API + "/review", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        rating: Number(rating),
+        comment: comment
+      })
+    });
+
+    document.getElementById("rating").value = "";
+    document.getElementById("comment").value = "";
+
+    loadReviews();
+
+  } catch (err) {
+    alert("في مشكلة بالسيرفر");
+    console.log(err);
+  }
+});
+
+// عرض التقييمات
+async function loadReviews() {
+  let res = await fetch(API + "/reviews");
+  let data = await res.json();
+
+  document.getElementById("reviews").innerHTML =
+    data.map(r => `
+      <div class="review">
+        ⭐ ${r.rating}/10<br>
+        ${r.comment}
+      </div>
+    `).join("");
+}
+
+loadReviews();
+</script>
+
+</body>
+</html>
