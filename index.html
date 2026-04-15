@@ -158,6 +158,30 @@ nav a:hover::after {
     box-shadow: 0 0 20px #00f7ff;
 }
 
+/* SOCIAL BUTTONS */
+.social-buttons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.social {
+    font-size: 13px;
+    padding: 10px 20px;
+}
+
+.tiktok {
+    background: linear-gradient(45deg, #000, #ff0050);
+    color: white;
+}
+
+.linkedin {
+    background: linear-gradient(45deg, #0077b5, #00a0dc);
+    color: white;
+}
+
 /* PRODUCTS */
 .products {
     padding: 60px 20px;
@@ -230,7 +254,22 @@ footer {
     <div>
         <h1>متجر الأنمي والأفلام 🔥</h1>
         <p>أفضل المنتجات لعشاق الأنمي والأفلام</p>
-       <a href="index3.html"> <button class="btn">تسوق الآن</button></a>
+
+        <a href="index3.html">
+            <button class="btn">تسوق الآن</button>
+        </a>
+
+        <!-- 🔗 SOCIAL -->
+        <div class="social-buttons">
+            <a href="https://www.tiktok.com/@npulse0?_r=1&_t=ZS-95YoOUgsqCj" target="_blank">
+                <button class="btn social tiktok">TikTok</button>
+            </a>
+
+            <a href="https://www.linkedin.com/in/n-pulse-store-6220362b7?utm_source=share_via&utm_content=profile&utm_medium=member_ios" target="_blank">
+                <button class="btn social linkedin">LinkedIn</button>
+            </a>
+        </div>
+
     </div>
 </section>
 
