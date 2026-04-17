@@ -1,0 +1,12 @@
+        section{
+         padding: 100px 200px;
+        }
+
+        .main{
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: url(https://i.postimg.cc/fy0dZPYS/Whats-App-Image-2026-04-16-at-1-17-50-AM.jpg) no-repeat;
+            background-size: cover;
+        }
