@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>باقات الإعلانات - اطلب الآن</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #e1e8ed;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .package-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #34495e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f1f1;
+        }
+
+        .price-list {
+            margin: 20px 0;
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .price-item:last-child { border-bottom: none; }
+
+        .currency-name { color: #7f8c8d; font-size: 15px; }
+        .amount { color: #27ae60; font-weight: 700; font-size: 18px; }
+
+        .whatsapp-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #25d366;
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: background 0.3s;
+            gap: 10px;
+        }
+
+        .whatsapp-btn:hover {
+            background-color: #1ebe57;
+        }
+
+        .featured {
+            border: 2px solid #25d366;
+            transform: scale(1.05);
+            z-index: 1;
+        }
+
+        .badge {
+            position: absolute;
+            top: -15px;
+            right: 50%;
+            transform: translateX(50%);
+            background: #25d366;
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .featured { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>باقات الإعلانات المتاحة</h1>
+
+    <div class="container">
+        <div class="card">
+            <div class="package-title">5 إعلانات</div>
+            <div class="price-list">
+                <div class="price-item"><span class="currency-name">الإمارات</span> <span class="amount">10 AED</span></div>
+                <div class="price-item"><span class="currency-name">السعودية</span> <span class="amount">10 SAR</span></div>
+                <div class="price-item"><span class="currency-name">الأردن</span> <span class="amount">1.95 JOD</span></div>
+            </div>
+            <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة (5 إعلانات)" class="whatsapp-btn">اطلب عبر واتساب</a>
+        </div>
+
+        <div class="card">
+            <div class="package-title">20 إعلان</div>
+            <div class="price-list">
+                <div class="price-item"><span class="currency-name">الإمارات</span> <span class="amount">20 AED</span></div>
+                <div class="price-item"><span class="currency-name">السعودية</span> <span class="amount">20 SAR</span></div>
+                <div class="price-item"><span class="currency-name">الأردن</span> <span class="amount">3.90 JOD</span></div>
+            </div>
+            <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة (20 إعلان)" class="whatsapp-btn">اطلب عبر واتساب</a>
+        </div>
+
+        <div class="card">
+            <div class="package-title">شهر كامل</div>
+            <div class="price-list">
+                <div class="price-item"><span class="currency-name">الإمارات</span> <span class="amount">50 AED</span></div>
+                <div class="price-item"><span class="currency-name">السعودية</span> <span class="amount">50 SAR</span></div>
+                <div class="price-item"><span class="currency-name">الأردن</span> <span class="amount">9.75 JOD</span></div>
+            </div>
+            <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة (شهر كامل)" class="whatsapp-btn">اطلب عبر واتساب</a>
+        </div>
+
+        <div class="card featured">
+            <div class="badge">الأكثر طلباً</div>
+            <div class="package-title">6 شهور</div>
+            <div class="price-list">
+                <div class="price-item"><span class="currency-name">الإمارات</span> <span class="amount">200 AED</span></div>
+                <div class="price-item"><span class="currency-name">السعودية</span> <span class="amount">200 SAR</span></div>
+                <div class="price-item"><span class="currency-name">الأردن</span> <span class="amount">39.00 JOD</span></div>
+            </div>
+            <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة (6 شهور)" class="whatsapp-btn">اطلب عبر واتساب</a>
+        </div>
+
+        <div class="card">
+            <div class="package-title">سنة كاملة</div>
+            <div class="price-list">
+                <div class="price-item"><span class="currency-name">الإمارات</span> <span class="amount">550 AED</span></div>
+                <div class="price-item"><span class="currency-name">السعودية</span> <span class="amount">550 SAR</span></div>
+                <div class="price-item"><span class="currency-name">الأردن</span> <span class="amount">107.00 JOD</span></div>
+            </div>
+            <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة (سنة كاملة)" class="whatsapp-btn">اطلب عبر واتساب</a>
+        </div>
+    </div>
+
+</body>
+</html>
