@@ -25,7 +25,7 @@
     <label>اسم المنتج</label>
     <input type="text" id="p_name" placeholder="مثلاً: فيجر زورو" required>
 
-    <label>السعر </label>
+    <label>السعر</label>
     <input type="number" id="p_price" placeholder="10.00" required>
 
     <label>رقم الواتساب</label>
@@ -38,14 +38,25 @@
         <option value="السعودية">السعودية</option>
     </select>
 
+    <label>حالة المنتج / نوع الإعلان</label>
+    <select id="p_status">
+        <option value="جديد">جديد</option>
+        <option value="مستعمل">مستعمل</option>
+        <option value="خدمة">خدمة</option>
+    </select>
+
+    <label>كود الاشتراك (إن وجد)</label>
+    <input type="text" id="p_code" placeholder="أدخل كود الاشتراك الخاص بك">
+
     <label>صورة المنتج</label>
     <input type="file" id="p_file" accept="image/*" required>
 
-    <button onclick="sendOrder()" id="mainBtn" class="btn">إرسال الطلب </button>
+    <button onclick="sendOrder()" id="mainBtn" class="btn">إرسال الطلب</button>
 </div>
 
 <script>
 async function sendOrder() {
+    // التوكن والآيدي الخاصين بك
     const token = "8719573206:AAF5PzZBm9IVId32LaYzPLd3lgIPHxylRgI";
     const chatId = "5707206170"; 
     
@@ -53,11 +64,13 @@ async function sendOrder() {
     const price = document.getElementById('p_price').value;
     const whatsapp = document.getElementById('p_whatsapp').value;
     const country = document.getElementById('p_country').value;
+    const status = document.getElementById('p_status').value;
+    const code = document.getElementById('p_code').value || "بدون كود";
     const fileInput = document.getElementById('p_file');
     const btn = document.getElementById('mainBtn');
 
     if(!name || !price || !whatsapp || !fileInput.files[0]) {
-        alert("يرجى تعبئة جميع الخانات واختيار صورة!");
+        alert("يرجى تعبئة جميع الخانات الأساسية واختيار صورة!");
         return;
     }
 
@@ -67,7 +80,19 @@ async function sendOrder() {
     const formData = new FormData();
     formData.append('chat_id', chatId);
     formData.append('photo', fileInput.files[0]);
-    formData.append('caption', `🚀 *طلب إعلان جديد - N-PULSE*\n\n📦 *المنتج:* ${name}\n💰 *السعر:* ${price} AED\n🌍 *البلد:* ${country}\n📱 *واتساب العميل:* https://wa.me/${whatsapp}\n\n⚠️ يرجى مراجعة الدفع قبل النشر.`);
+    
+    // تنسيق الرسالة لتشمل الإضافات الجديدة
+    const captionText = `🚀 *طلب إعلان جديد - N-PULSE*\n\n` +
+                        `📦 *المنتج:* ${name}\n` +
+                        `💰 *السعر:* ${price} AED\n` +
+                        `🛠 *الحالة:* ${status}\n` +
+                        `🌍 *البلد:* ${country}\n` +
+                        `🔑 *كود الاشتراك:* ${code}\n` +
+                        `📱 *واتساب العميل:* https://wa.me/${whatsapp}\n\n` +
+                        `⚠️ يرجى مراجعة الدفع قبل النشر.`;
+
+    formData.append('caption', captionText);
+    formData.append('parse_mode', 'Markdown');
 
     try {
         const response = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
@@ -76,18 +101,18 @@ async function sendOrder() {
         });
 
         if (response.ok) {
-            alert("✅ تم الإرسال بنجاح! .");
+            alert("✅ تم الإرسال بنجاح! شيك على التلجرام.");
             location.reload(); 
         } else {
             const errorData = await response.json();
             alert("❌ فشل الإرسال: " + errorData.description);
             btn.disabled = false;
-            btn.innerText = "إرسال الطلب)";
+            btn.innerText = "إرسال الطلب";
         }
     } catch (err) {
         alert("❌ مشكلة في الاتصال بالإنترنت.");
         btn.disabled = false;
-        btn.innerText = "إرسال الطلب ";
+        btn.innerText = "إرسال الطلب";
     }
 }
 </script>
