@@ -101,7 +101,7 @@ async function sendOrder() {
         });
 
         if (response.ok) {
-            alert("✅ تم الإرسال بنجاح! شيك على التلجرام.");
+            alert("✅ تم الإرسال بنجاح!.");
             location.reload(); 
         } else {
             const errorData = await response.json();
