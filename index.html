@@ -108,6 +108,131 @@ section{
             </a>
         </div>
 
+         <style>
+        .custom-translate-container {
+            position: relative;
+            display: inline-block;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .lang-button {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .lang-dropdown {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+            right: 0;
+        }
+
+        .lang-dropdown a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: right;
+        }
+
+        .lang-dropdown a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .show { display: block; }
+
+       
+        #google_translate_element, .skiptranslate.goog-te-gadget {
+            display: none !important;
+        }
+        .goog-te-banner-frame.skiptranslate {
+            display: none !important;
+        }
+        body {
+            top: 0px !important;
+        }
+        .goog-tooltip {
+            display: none !important;
+        }
+        .goog-tooltip:hover {
+            display: none !important;
+        }
+        .goog-text-highlight {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="custom-translate-container">
+        <button onclick="toggleDropdown()" class="lang-button">تغيير اللغة / Language</button>
+        <div id="myDropdown" class="lang-dropdown">
+            <a href="javascript:void(0)" onclick="translatePage('ar')">العربية</a>
+            <a href="javascript:void(0)" onclick="translatePage('en')">English</a>
+            <a href="javascript:void(0)" onclick="translatePage('zh-CN')">中文 (Chinese)</a>
+            <a href="javascript:void(0)" onclick="translatePage('fr')">Français</a>
+            <a href="javascript:void(0)" onclick="translatePage('de')">Deutsch</a>
+            <a href="javascript:void(0)" onclick="translatePage('es')">Español</a>
+        </div>
+    </div>
+
+
+
+    <div id="google_translate_element"></div>
+
+    <script>
+        
+        function toggleDropdown() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+      
+        function translatePage(langCode) {
+            var select = document.querySelector('.goog-te-combo');
+            if (select) {
+                select.value = langCode;
+                select.dispatchEvent(new Event('change'));
+            }
+            toggleDropdown(); 
+        }
+
+     
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'ar',
+                includedLanguages: 'en,zh-CN,fr,de,es,ar',
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+
+       
+        window.onclick = function(event) {
+            if (!event.target.matches('.lang-button')) {
+                var dropdowns = document.getElementsByClassName("lang-dropdown");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+         
+
     </div>
 
 </section>
