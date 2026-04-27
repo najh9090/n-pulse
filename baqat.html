@@ -1,304 +1,209 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>باقات الإعلانات - اطلب الآن</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
-
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 40px;
-            text-align: center;
-        }
-
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            border: 1px solid #e1e8ed;
-            position: relative;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-
-        .package-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #34495e;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f1f1f1;
-        }
-
-        .price-list {
-            margin: 20px 0;
-        }
-
-        .price-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px dashed #eee;
-        }
-
-        .price-item:last-child { border-bottom: none; }
-
-        .currency-name { color: #7f8c8d; font-size: 15px; }
-        .amount { color: #27ae60; font-weight: 700; font-size: 18px; }
-
-        .whatsapp-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #25d366;
-            color: white;
-            text-decoration: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: bold;
-            margin-top: 20px;
-            transition: background 0.3s;
-            gap: 10px;
-        }
-
-        .whatsapp-btn:hover {
-            background-color: #1ebe57;
-        }
-
-        .featured {
-            border: 2px solid #25d366;
-            transform: scale(1.05);
-            z-index: 1;
-        }
-
-        .badge {
-            position: absolute;
-            top: -15px;
-            right: 50%;
-            transform: translateX(50%);
-            background: #25d366;
-            color: white;
-            padding: 5px 20px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-            .featured { transform: scale(1); }
-        }
-    </style>
-</head>
-<body>
-
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N-PULSE | باقات الإعلانات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
-        .custom-translate-container {
-            position: relative;
-            display: inline-block;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  :root {
+    --orange: #FF6B00;
+    --orange-glow: rgba(255,107,0,0.12);
+    --dark: #0D0D0D;
+    --dark-2: #161616;
+    --dark-3: #1F1F1F;
+    --green: #00C853;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Tajawal',sans-serif; background:var(--dark); color:white; }
 
-        .lang-button {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+  .navbar {
+    background: rgba(13,13,13,0.9);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,107,0,0.2);
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 65px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { font-size:22px; font-weight:900; color:var(--orange); text-decoration:none; }
+  .back-btn {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    transition: all 0.25s;
+  }
+  .back-btn:hover { border-color: var(--orange); color: var(--orange); }
 
-        .lang-dropdown {
-            display: none;
-            position: absolute;
-            background-color: #fff;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-            z-index: 1;
-            border-radius: 5px;
-            overflow: hidden;
-            right: 0;
-        }
+  .hero {
+    text-align: center;
+    padding: 80px 20px 50px;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 70% at 50% 30%, rgba(255,107,0,0.08), transparent);
+    pointer-events: none;
+  }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight:900; margin-bottom:12px; }
+  .hero h1 span { color: var(--orange); }
+  .hero p { color: #666; font-size:16px; max-width:400px; margin:0 auto; }
 
-        .lang-dropdown a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            text-align: right;
-        }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 30px 80px;
+  }
 
-        .lang-dropdown a:hover {
-            background-color: #f1f1f1;
-        }
+  .card {
+    background: var(--dark-2);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 22px;
+    padding: 32px 24px;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .card:hover {
+    border-color: var(--orange);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(255,107,0,0.12);
+  }
+  .card.featured {
+    border-color: var(--orange);
+    background: linear-gradient(145deg, rgba(255,107,0,0.07), var(--dark-2));
+  }
+  .badge {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--orange);
+    color: white;
+    padding: 4px 18px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
 
-        .show { display: block; }
+  .pkg-icon { font-size: 36px; margin-bottom: 12px; display: block; }
+  .pkg-title { font-size: 22px; font-weight: 800; margin-bottom: 20px; }
 
-       
-        #google_translate_element, .skiptranslate.goog-te-gadget {
-            display: none !important;
-        }
-        .goog-te-banner-frame.skiptranslate {
-            display: none !important;
-        }
-        body {
-            top: 0px !important;
-        }
-        .goog-tooltip {
-            display: none !important;
-        }
-        .goog-tooltip:hover {
-            display: none !important;
-        }
-        .goog-text-highlight {
-            background-color: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-    </style>
+  .prices {
+    background: var(--dark-3);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+  }
+  .price-label { color: #666; }
+  .price-val { color: var(--orange); font-weight: 700; }
+
+  .cta {
+    display: block;
+    background: var(--green);
+    color: white;
+    text-decoration: none;
+    padding: 13px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    transition: all 0.3s;
+  }
+  .cta:hover { background: #00a844; transform: scale(1.02); }
+</style>
 </head>
 <body>
 
-    <div class="custom-translate-container">
-        <button onclick="toggleDropdown()" class="lang-button">تغيير اللغة / Language</button>
-        <div id="myDropdown" class="lang-dropdown">
-            <a href="javascript:void(0)" onclick="translatePage('ar')">العربية</a>
-            <a href="javascript:void(0)" onclick="translatePage('en')">English</a>
-            <a href="javascript:void(0)" onclick="translatePage('zh-CN')">中文 (Chinese)</a>
-            <a href="javascript:void(0)" onclick="translatePage('fr')">Français</a>
-            <a href="javascript:void(0)" onclick="translatePage('de')">Deutsch</a>
-            <a href="javascript:void(0)" onclick="translatePage('es')">Español</a>
-        </div>
+<nav class="navbar">
+  <a href="index.html" class="logo">N-PULSE</a>
+  <a href="index.html" class="back-btn">← العودة للرئيسية</a>
+</nav>
+
+<div class="hero">
+  <h1>باقات <span>الإعلانات</span></h1>
+  <p>اختر الباقة المناسبة وابدأ نشر إعلاناتك فوراً</p>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <span class="pkg-icon">📦</span>
+    <div class="pkg-title">5 إعلانات</div>
+    <div class="prices">
+      <div class="price-row"><span class="price-label">🇦🇪 الإمارات</span><span class="price-val">10 AED</span></div>
+      <div class="price-row"><span class="price-label">🇸🇦 السعودية</span><span class="price-val">10 SAR</span></div>
+      <div class="price-row"><span class="price-label">🇯🇴 الأردن</span><span class="price-val">1.95 JOD</span></div>
     </div>
+    <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة 5 إعلانات" class="cta">💬 اطلب الآن</a>
+  </div>
 
-
-
-    <div id="google_translate_element"></div>
-
-    <script>
-        
-        function toggleDropdown() {
-            document.getElementById("myDropdown").classList.toggle("show");
-        }
-
-      
-        function translatePage(langCode) {
-            var select = document.querySelector('.goog-te-combo');
-            if (select) {
-                select.value = langCode;
-                select.dispatchEvent(new Event('change'));
-            }
-            toggleDropdown(); 
-        }
-
-     
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'ar',
-                includedLanguages: 'en,zh-CN,fr,de,es,ar',
-                autoDisplay: false
-            }, 'google_translate_element');
-        }
-
-       
-        window.onclick = function(event) {
-            if (!event.target.matches('.lang-button')) {
-                var dropdowns = document.getElementsByClassName("lang-dropdown");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-        }
-    </script>
-    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-    <br>
-
-
-    <h1>باقات الإعلانات المتاحة</h1>
-
-    <div class="container">
-        <div class="card">
-            <div class="package-title">5 إعلانات</div>
-            <div class="price-list">
-                <div class="price-item"><span class="currency-name">الإمارات</span> <span class="amount">10 AED</span></div>
-                <div class="price-item"><span class="currency-name">السعودية</span> <span class="amount">10 SAR</span></div>
-                <div class="price-item"><span class="currency-name">الأردن</span> <span class="amount">1.95 JOD</span></div>
-            </div>
-            <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة (5 إعلانات)" class="whatsapp-btn">اطلب عبر واتساب</a>
-        </div>
-
-        <div class="card">
-            <div class="package-title">20 إعلان</div>
-            <div class="price-list">
-                <div class="price-item"><span class="currency-name">الإمارات</span> <span class="amount">20 AED</span></div>
-                <div class="price-item"><span class="currency-name">السعودية</span> <span class="amount">20 SAR</span></div>
-                <div class="price-item"><span class="currency-name">الأردن</span> <span class="amount">3.90 JOD</span></div>
-            </div>
-            <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة (20 إعلان)" class="whatsapp-btn">اطلب عبر واتساب</a>
-        </div>
-
-        <div class="card">
-            <div class="package-title">شهر كامل</div>
-            <div class="price-list">
-                <div class="price-item"><span class="currency-name">الإمارات</span> <span class="amount">50 AED</span></div>
-                <div class="price-item"><span class="currency-name">السعودية</span> <span class="amount">50 SAR</span></div>
-                <div class="price-item"><span class="currency-name">الأردن</span> <span class="amount">9.75 JOD</span></div>
-            </div>
-            <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة (شهر كامل)" class="whatsapp-btn">اطلب عبر واتساب</a>
-        </div>
-
-        <div class="card featured">
-            <div class="badge">الأكثر طلباً</div>
-            <div class="package-title">6 شهور</div>
-            <div class="price-list">
-                <div class="price-item"><span class="currency-name">الإمارات</span> <span class="amount">200 AED</span></div>
-                <div class="price-item"><span class="currency-name">السعودية</span> <span class="amount">200 SAR</span></div>
-                <div class="price-item"><span class="currency-name">الأردن</span> <span class="amount">39.00 JOD</span></div>
-            </div>
-            <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة (6 شهور)" class="whatsapp-btn">اطلب عبر واتساب</a>
-        </div>
-
-        <div class="card">
-            <div class="package-title">سنة كاملة</div>
-            <div class="price-list">
-                <div class="price-item"><span class="currency-name">الإمارات</span> <span class="amount">550 AED</span></div>
-                <div class="price-item"><span class="currency-name">السعودية</span> <span class="amount">550 SAR</span></div>
-                <div class="price-item"><span class="currency-name">الأردن</span> <span class="amount">107.00 JOD</span></div>
-            </div>
-            <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة (سنة كاملة)" class="whatsapp-btn">اطلب عبر واتساب</a>
-        </div>
+  <div class="card">
+    <span class="pkg-icon">🚀</span>
+    <div class="pkg-title">20 إعلان</div>
+    <div class="prices">
+      <div class="price-row"><span class="price-label">🇦🇪 الإمارات</span><span class="price-val">20 AED</span></div>
+      <div class="price-row"><span class="price-label">🇸🇦 السعودية</span><span class="price-val">20 SAR</span></div>
+      <div class="price-row"><span class="price-label">🇯🇴 الأردن</span><span class="price-val">3.90 JOD</span></div>
     </div>
+    <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة 20 إعلان" class="cta">💬 اطلب الآن</a>
+  </div>
+
+  <div class="card">
+    <span class="pkg-icon">📅</span>
+    <div class="pkg-title">شهر كامل</div>
+    <div class="prices">
+      <div class="price-row"><span class="price-label">🇦🇪 الإمارات</span><span class="price-val">50 AED</span></div>
+      <div class="price-row"><span class="price-label">🇸🇦 السعودية</span><span class="price-val">50 SAR</span></div>
+      <div class="price-row"><span class="price-label">🇯🇴 الأردن</span><span class="price-val">9.75 JOD</span></div>
+    </div>
+    <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة شهر كامل" class="cta">💬 اطلب الآن</a>
+  </div>
+
+  <div class="card featured">
+    <div class="badge">⭐ الأكثر طلباً</div>
+    <span class="pkg-icon">🔥</span>
+    <div class="pkg-title">6 شهور</div>
+    <div class="prices">
+      <div class="price-row"><span class="price-label">🇦🇪 الإمارات</span><span class="price-val">200 AED</span></div>
+      <div class="price-row"><span class="price-label">🇸🇦 السعودية</span><span class="price-val">200 SAR</span></div>
+      <div class="price-row"><span class="price-label">🇯🇴 الأردن</span><span class="price-val">39 JOD</span></div>
+    </div>
+    <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة 6 شهور" class="cta">💬 اطلب الآن</a>
+  </div>
+
+  <div class="card">
+    <span class="pkg-icon">💎</span>
+    <div class="pkg-title">سنة كاملة</div>
+    <div class="prices">
+      <div class="price-row"><span class="price-label">🇦🇪 الإمارات</span><span class="price-val">550 AED</span></div>
+      <div class="price-row"><span class="price-label">🇸🇦 السعودية</span><span class="price-val">550 SAR</span></div>
+      <div class="price-row"><span class="price-label">🇯🇴 الأردن</span><span class="price-val">107 JOD</span></div>
+    </div>
+    <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة سنة كاملة" class="cta">💬 اطلب الآن</a>
+  </div>
+</div>
 
 </body>
 </html>
