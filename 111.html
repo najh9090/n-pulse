@@ -278,6 +278,34 @@
     .two-col { grid-template-columns: 1fr; gap: 0; }
     .back-link { top: 14px; right: 14px; font-size: 13px; padding: 6px 12px; }
   }
+
+  /* === زر الترجمة === */
+  .custom-translate-container { position: relative; display: inline-block; font-family: 'Tajawal', sans-serif; }
+  .lang-button {
+    background: rgba(255,107,0,0.1); color: #ccc; padding: 6px 14px;
+    border: 1px solid rgba(255,107,0,0.3); border-radius: 8px; cursor: pointer;
+    font-size: 13px; font-weight: 600; transition: all 0.2s; outline: none;
+    font-family: 'Tajawal', sans-serif;
+  }
+  .lang-button:hover { background: rgba(255,107,0,0.2); border-color: #FF6B00; color: #FF6B00; }
+  .lang-dropdown {
+    display: none; position: absolute; background: #1F1F1F; min-width: 150px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6); z-index: 9999; border-radius: 10px;
+    margin-top: 6px; right: 0; border: 1px solid rgba(255,107,0,0.2); overflow: hidden;
+    animation: ldSlide 0.2s ease-out;
+  }
+  @keyframes ldSlide { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
+  .lang-dropdown a {
+    color: #aaa; padding: 10px 16px; text-decoration: none; display: block;
+    text-align: right; font-size: 13px; transition: background 0.2s;
+    border-bottom: 1px solid rgba(255,255,255,0.04); font-family: 'Tajawal', sans-serif;
+  }
+  .lang-dropdown a:last-child { border-bottom: none; }
+  .lang-dropdown a:hover { background: rgba(255,107,0,0.1); color: #FF6B00; }
+  .lang-dropdown.show { display: block !important; }
+  #google_translate_element { position: absolute; top: -9999px; visibility: hidden; }
+  .skiptranslate.goog-te-gadget, .goog-te-banner-frame, #goog-gt-tt, .goog-tooltip { display: none !important; }
+  body { top: 0px !important; }
 </style>
 </head>
 <body>
@@ -432,6 +460,36 @@ async function sendOrder() {
   }
 }
 </script>
+
+
+<div id="google_translate_element"></div>
+<script>
+  function toggleLangDropdown() {
+    document.getElementById('langDropdown').classList.toggle('show');
+  }
+  function translatePage(langCode) {
+    var select = document.querySelector('.goog-te-combo');
+    if (select) {
+      select.value = langCode;
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    document.getElementById('langDropdown').classList.remove('show');
+  }
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'ar',
+      includedLanguages: 'en,zh-CN,fr,de,es,ar',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+  window.addEventListener('click', function(event) {
+    if (!event.target.matches('.lang-button')) {
+      var d = document.getElementById('langDropdown');
+      if (d && d.classList.contains('show')) d.classList.remove('show');
+    }
+  });
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>
