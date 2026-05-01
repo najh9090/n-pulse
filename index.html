@@ -794,7 +794,7 @@
     <li><a href="#services">خدمات</a></li>
     <li><a href="#digital">رقمي</a></li>
     <li><a href="#other">أخرى</a></li>
-    <li><a href="111.html">نشر إعلان</a></li>
+    <li><a href="#add">نشر إعلان</a></li>
     <li class="country-dropdown">
       <a href="#" class="nav-country-btn">🌍 الدول</a>
       <div class="country-dropdown-menu">
@@ -995,68 +995,6 @@
   </div>
 </div>
 
-<!-- PACKAGES -->
-<div class="packages-section">
-  <div class="section-title" style="padding-top:0">
-    <h2>باقات الإعلانات</h2>
-    <p>اختر الباقة المناسبة وابدأ النشر الآن</p>
-    <div class="line"></div>
-  </div>
-
-  <div class="packages-grid">
-    <div class="pkg-card">
-      <div class="pkg-title">5 إعلانات</div>
-      <div class="pkg-prices">
-        <div class="pkg-price-row"><span class="pkg-country">🇦🇪</span><span class="pkg-amount">10 AED</span></div>
-        <div class="pkg-price-row"><span class="pkg-country">🇸🇦</span><span class="pkg-amount">10 SAR</span></div>
-        <div class="pkg-price-row"><span class="pkg-country">🇯🇴</span><span class="pkg-amount">1.95 JOD</span></div>
-      </div>
-      <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة 5 إعلانات" class="pkg-btn">اطلب الآن</a>
-    </div>
-
-    <div class="pkg-card">
-      <div class="pkg-title">20 إعلان</div>
-      <div class="pkg-prices">
-        <div class="pkg-price-row"><span class="pkg-country">🇦🇪</span><span class="pkg-amount">20 AED</span></div>
-        <div class="pkg-price-row"><span class="pkg-country">🇸🇦</span><span class="pkg-amount">20 SAR</span></div>
-        <div class="pkg-price-row"><span class="pkg-country">🇯🇴</span><span class="pkg-amount">3.90 JOD</span></div>
-      </div>
-      <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة 20 إعلان" class="pkg-btn">اطلب الآن</a>
-    </div>
-
-    <div class="pkg-card">
-      <div class="pkg-title">شهر كامل</div>
-      <div class="pkg-prices">
-        <div class="pkg-price-row"><span class="pkg-country">🇦🇪</span><span class="pkg-amount">50 AED</span></div>
-        <div class="pkg-price-row"><span class="pkg-country">🇸🇦</span><span class="pkg-amount">50 SAR</span></div>
-        <div class="pkg-price-row"><span class="pkg-country">🇯🇴</span><span class="pkg-amount">9.75 JOD</span></div>
-      </div>
-      <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة شهر كامل" class="pkg-btn">اطلب الآن</a>
-    </div>
-
-    <div class="pkg-card featured">
-      <div class="pkg-star">⭐ الأكثر طلباً</div>
-      <div class="pkg-title">6 شهور</div>
-      <div class="pkg-prices">
-        <div class="pkg-price-row"><span class="pkg-country">🇦🇪</span><span class="pkg-amount">200 AED</span></div>
-        <div class="pkg-price-row"><span class="pkg-country">🇸🇦</span><span class="pkg-amount">200 SAR</span></div>
-        <div class="pkg-price-row"><span class="pkg-country">🇯🇴</span><span class="pkg-amount">39 JOD</span></div>
-      </div>
-      <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة 6 شهور" class="pkg-btn">اطلب الآن</a>
-    </div>
-
-    <div class="pkg-card">
-      <div class="pkg-title">سنة كاملة</div>
-      <div class="pkg-prices">
-        <div class="pkg-price-row"><span class="pkg-country">🇦🇪</span><span class="pkg-amount">550 AED</span></div>
-        <div class="pkg-price-row"><span class="pkg-country">🇸🇦</span><span class="pkg-amount">550 SAR</span></div>
-        <div class="pkg-price-row"><span class="pkg-country">🇯🇴</span><span class="pkg-amount">107 JOD</span></div>
-      </div>
-      <a href="https://wa.me/971509900260?text=مرحباً، أريد الاشتراك في باقة سنة كاملة" class="pkg-btn">اطلب الآن</a>
-    </div>
-  </div>
-</div>
-
 <!-- PUBLISH CTA -->
 <section class="publish-section">
   <h2>انشر إعلانك الآن 📢</h2>
@@ -1092,16 +1030,23 @@
       </select>
     </div>
     <div class="form-group">
-      <label>كود الاشتراك</label>
-      <input type="text" id="p_code" placeholder="أدخل كودك هنا">
+      <label>وصف المنتج</label>
+      <textarea id="p_desc" placeholder="اكتب وصفاً مفصلاً للمنتج، حالته، مميزاته..." rows="4" style="width:100%;background:var(--dark-3);border:1.5px solid rgba(255,255,255,0.06);color:white;padding:13px 16px;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;outline:none;resize:vertical;transition:all 0.25s;" onfocus="this.style.borderColor='var(--orange)';this.style.background='var(--dark-4)'" onblur="this.style.borderColor='rgba(255,255,255,0.06)';this.style.background='var(--dark-3)'"></textarea>
     </div>
     <div class="form-group">
-      <label>صورة المنتج</label>
-      <input type="file" id="p_file" accept="image/*" style="color:#aaa">
+      <label>صور المنتج <span style="color:#666;font-size:12px;">(يمكنك اختيار أكثر من صورة)</span></label>
+      <div id="dropzone" onclick="document.getElementById('p_file').click()" style="border:2px dashed rgba(255,107,0,0.3);border-radius:14px;padding:24px;text-align:center;cursor:pointer;transition:all 0.25s;background:var(--dark-3);" onmouseover="this.style.borderColor='var(--orange)';this.style.background='rgba(255,107,0,0.06)'" onmouseout="this.style.borderColor='rgba(255,107,0,0.3)';this.style.background='var(--dark-3)'">
+        <div style="font-size:32px;margin-bottom:8px;">📷</div>
+        <div style="color:#888;font-size:14px;">اضغط لاختيار الصور</div>
+        <div style="color:#555;font-size:12px;margin-top:4px;">PNG, JPG, JPEG</div>
+      </div>
+      <input type="file" id="p_file" accept="image/*" multiple style="display:none" onchange="previewImages(this)">
+      <div id="img-preview" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;"></div>
     </div>
     <button class="submit-btn" id="mainBtn" onclick="sendOrder()">إرسال الطلب 🚀</button>
   </div>
 </section>
+<style>#p_desc::placeholder{color:#3a3a3a;}</style>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -1114,8 +1059,34 @@
   </div>
   <div class="footer-copy">© 2026 N-PULSE. جميع الحقوق محفوظة.</div>
 </footer>
-
+<div id="add" class="section-title">
 <script>
+function previewImages(input) {
+  const preview = document.getElementById('img-preview');
+  preview.innerHTML = '';
+  const files = Array.from(input.files);
+  files.forEach((file, i) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;width:80px;height:80px;';
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.cssText = 'width:80px;height:80px;object-fit:cover;border-radius:10px;border:2px solid var(--orange);';
+      const del = document.createElement('span');
+      del.textContent = '✕';
+      del.style.cssText = 'position:absolute;top:-6px;left:-6px;background:#e74c3c;color:white;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;font-weight:bold;';
+      del.onclick = () => { wrap.remove(); };
+      wrap.appendChild(img);
+      wrap.appendChild(del);
+      preview.appendChild(wrap);
+    };
+    reader.readAsDataURL(file);
+  });
+  const dz = document.getElementById('dropzone');
+  dz.innerHTML = `<div style="font-size:20px;">✅</div><div style="color:var(--green);font-size:13px;margin-top:4px;">تم اختيار ${files.length} صورة</div>`;
+}
+
 async function sendOrder() {
   const token = "8719573206:AAF5PzZBm9IVId32LaYzPLd3lgIPHxylRgI";
   const chatId = "5707206170";
@@ -1124,44 +1095,57 @@ async function sendOrder() {
   const whatsapp = document.getElementById('p_whatsapp').value;
   const country = document.getElementById('p_country').value;
   const status = document.getElementById('p_status').value;
-  const code = document.getElementById('p_code').value || "بدون كود";
+  const desc = document.getElementById('p_desc').value || "بدون وصف";
   const fileInput = document.getElementById('p_file');
   const btn = document.getElementById('mainBtn');
 
   if (!name || !price || !whatsapp || !fileInput.files[0]) {
-    alert("يرجى تعبئة جميع الخانات واختيار صورة!");
+    alert("يرجى تعبئة جميع الخانات واختيار صورة واحدة على الأقل!");
     return;
   }
 
   btn.disabled = true;
   btn.innerText = "⏳ جاري الإرسال...";
 
-  const formData = new FormData();
-  formData.append('chat_id', chatId);
-  formData.append('photo', fileInput.files[0]);
-  const caption = `🚀 *طلب إعلان جديد - N-PULSE*\n\n📦 *المنتج:* ${name}\n💰 *السعر:* ${price}\n🛠 *الحالة:* ${status}\n🌍 *البلد:* ${country}\n🔑 *كود:* ${code}\n📱 *واتساب:* https://wa.me/${whatsapp}\n\n⚠️ يرجى مراجعة الدفع قبل النشر.`;
-  formData.append('caption', caption);
-  formData.append('parse_mode', 'Markdown');
+  const caption = `🚀 *طلب إعلان جديد - N-PULSE*\n\n📦 *المنتج:* ${name}\n📝 *الوصف:* ${desc}\n💰 *السعر:* ${price}\n🛠 *الحالة:* ${status}\n🌍 *البلد:* ${country}\n📱 *واتساب:* https://wa.me/${whatsapp}\n\n⚠️ يرجى مراجعة الدفع قبل النشر.`;
+
+  const files = Array.from(fileInput.files);
 
   try {
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
-    if (res.ok) {
-      alert("✅ تم الإرسال بنجاح!");
-      location.reload();
+    if (files.length === 1) {
+      // إرسال صورة واحدة
+      const formData = new FormData();
+      formData.append('chat_id', chatId);
+      formData.append('photo', files[0]);
+      formData.append('caption', caption);
+      formData.append('parse_mode', 'Markdown');
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
+      if (!res.ok) throw new Error((await res.json()).description);
     } else {
-      const err = await res.json();
-      alert("❌ فشل: " + err.description);
-      btn.disabled = false;
-      btn.innerText = "إرسال الطلب 🚀";
+      // إرسال مجموعة صور (media group)
+      const mediaGroup = files.map((f, i) => ({
+        type: 'photo',
+        media: `attach://photo${i}`,
+        ...(i === 0 ? { caption, parse_mode: 'Markdown' } : {})
+      }));
+      const formData = new FormData();
+      formData.append('chat_id', chatId);
+      formData.append('media', JSON.stringify(mediaGroup));
+      files.forEach((f, i) => formData.append(`photo${i}`, f));
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendMediaGroup`, { method: 'POST', body: formData });
+      if (!res.ok) throw new Error((await res.json()).description);
     }
-  } catch {
-    alert("❌ خطأ في الاتصال.");
+
+    alert("✅ تم الإرسال بنجاح! سيتم مراجعة إعلانك قريباً.");
+    location.reload();
+  } catch(err) {
+    alert("❌ فشل الإرسال: " + err.message);
     btn.disabled = false;
     btn.innerText = "إرسال الطلب 🚀";
   }
 }
 </script>
-
+</div>
 
 <div id="google_translate_element"></div>
 <script>
