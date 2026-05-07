@@ -2,56 +2,100 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>N-PULSE LIVE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-PULSE LIVE | البث المباشر</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
-        body { margin: 0; background: #000; color: white; font-family: sans-serif; text-align: center; }
-        video { width: 100%; height: 85vh; object-fit: cover; background: #111; }
-        .btn-live { position: fixed; bottom: 20px; right: 20px; padding: 15px 30px; background: #ff4757; color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 100; }
+        body { margin: 0; background: #000; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
+        .main-container { width: 100vw; height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; }
+        video { width: 100%; height: 100%; object-fit: cover; background: #111; }
+        .overlay { position: absolute; bottom: 40px; left: 20px; right: 20px; z-index: 10; text-align: center; }
+        .btn-live { background: #ff4757; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4); transition: 0.3s; }
+        .btn-live:hover { transform: scale(1.05); background: #ff6b81; }
+        #status-tag { background: rgba(0, 0, 0, 0.6); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.2); }
+        .logo { position: absolute; top: 20px; right: 20px; font-weight: bold; font-size: 24px; color: #ff4757; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); z-index: 20; }
     </style>
 </head>
 <body>
 
-    <div id="msg" style="padding: 10px; font-size: 14px;">جاري البحث عن بث مباشر...</div>
-    <video id="v" autoplay playsinline></video>
-    <button class="btn-live" onclick="startLive()">Go LIVE 🔴</button>
+<div class="main-container">
+    <div class="logo">N-PULSE</div>
+    
+    <video id="remote-video" autoplay playsinline></video>
+    
+    <div class="overlay">
+        <div id="status-tag">بانتظار بدء البث...</div><br>
+        <button id="start-live-btn" class="btn-live" onclick="startBroadcasting()">ابدأ البث الآن 🔴</button>
+    </div>
+</div>
 
 <script>
-    // بيانات Pusher الخاصة بك
-    const pusher = new Pusher('ca8c11281ba306c108b9', { cluster: 'ap2' });
-    const channel = pusher.subscribe('npulse-channel'); // قناة عامة لسهولة الربط
+    // إعدادات Firebase الخاصة بمشروعك
+    const firebaseConfig = {
+        databaseURL: "https://npulse-live-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
     const peer = new Peer();
-    const video = document.getElementById('v');
-    const msg = document.getElementById('msg');
+    const videoElement = document.getElementById('remote-video');
+    const statusText = document.getElementById('status-tag');
 
-    // 1. المشتري (كل الناس): ينتظر رسالة "بدء البث"
-    channel.bind('new-live', (data) => {
-        if (data.id !== peer.id) {
-            msg.innerText = "تم العثور على بث! جاري الاتصال...";
-            const call = peer.call(data.id, null);
-            call.on('stream', s => { video.srcObject = s; video.muted = false; });
-        }
+    // مراقبة حالة البث (للمشاهدين)
+    peer.on('open', (myPeerId) => {
+        database.ref('live_stream_id').on('value', (snapshot) => {
+            const broadcasterId = snapshot.val();
+            
+            if (broadcasterId && broadcasterId !== myPeerId) {
+                statusText.innerText = "أنت تشاهد البث المباشر الآن ✅";
+                statusText.style.color = "#2ed573";
+                connectToStream(broadcasterId);
+            } else if (!broadcasterId) {
+                statusText.innerText = "لا يوجد بث مباشر حالياً.";
+                statusText.style.color = "white";
+                videoElement.srcObject = null;
+            }
+        });
     });
 
-    // 2. البائع: عند ضغط الزر
-    async function startLive() {
+    // وظيفة بدء البث (للبائع)
+    async function startBroadcasting() {
         try {
-            const s = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
-            video.srcObject = s;
-            video.muted = true;
-
-            // إرسال الـ ID الخاص بك لكل الناس (يجب تفعيل Client Events في Pusher)
-            // ملاحظة: لو واجهت مشكلة في trigger، استخدم Firebase أو رابط مباشر
-            channel.trigger('client-new-live', { id: peer.id }); 
+            const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            videoElement.srcObject = localStream;
+            videoElement.muted = true; // صامت عند البائع لمنع صدى الصوت
             
-            msg.innerText = "أنت الآن لايف عند الجميع!";
-            peer.on('call', c => c.answer(s));
-        } catch (e) {
-            alert("تأكد من الـ HTTPS وصلاحية الكاميرا");
+            // تسجيل معرف البث في السيرفر
+            database.ref('live_stream_id').set(peer.id);
+            
+            // مسح المعرف عند إغلاق الصفحة تلقائياً
+            database.ref('live_stream_id').onDisconnect().remove();
+
+            document.getElementById('start-live-btn').style.display = 'none';
+            statusText.innerText = "أنت الآن لايف! الجميع يشاهدك.";
+            statusText.style.color = "#ff4757";
+
+            // استقبال اتصالات المشاهدين الجدد
+            peer.on('call', (call) => {
+                call.answer(localStream);
+            });
+        } catch (err) {
+            alert("يرجى تفعيل الكاميرا والميكروفون.");
+            console.error(err);
         }
     }
+
+    // وظيفة الاتصال بالبث (للمشاهد)
+    function connectToStream(id) {
+        const call = peer.call(id, null);
+        call.on('stream', (incomingStream) => {
+            videoElement.srcObject = incomingStream;
+            videoElement.muted = false; // المشاهد يسمع الصوت
+        });
+    }
 </script>
+
 </body>
 </html>
