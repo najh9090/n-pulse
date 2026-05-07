@@ -5,113 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>N-PULSE LIVE | البث المباشر</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <style>
-        :root { --main-color: #ff4757; --bg: #0f0f0f; }
-        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; overflow: hidden; }
-        .live-container { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        .overlay { position: absolute; bottom: 40px; left: 20px; right: 20px; z-index: 10; pointer-events: none; }
-        .controls { pointer-events: auto; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
-        .btn { padding: 12px 25px; border-radius: 30px; border: none; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
-        .btn-live { background: var(--main-color); color: white; box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4); }
-        .btn-live:hover { transform: scale(1.05); }
-        #status-tag { background: rgba(0,0,0,0.6); padding: 5px 15px; border-radius: 20px; font-size: 12px; border: 1px solid var(--main-color); }
-        .error-msg { color: #ff6b6b; font-size: 14px; margin-top: 10px; display: none; }
+        :root { --primary: #ff4757; --dark: #0a0a0a; }
+        body { margin: 0; background: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        .main-container { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; }
+        video { width: 100%; height: 100%; object-fit: cover; background: #000; }
+
+        .overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 20px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); z-index: 10; pointer-events: none; }
+        .controls { pointer-events: auto; }
+        
+        .btn-live { background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: bold; font-size: 18px; cursor: pointer; box-shadow: 0 4px 20px rgba(255, 71, 87, 0.4); transition: 0.3s; }
+        .btn-live:hover { transform: scale(1.05); background: #ff6b81; }
+
+        #status-bar { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 12px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); }
+        .live-tag { color: var(--primary); font-weight: bold; margin-bottom: 5px; display: block; }
     </style>
 </head>
 <body>
 
-<div class="live-container">
-    <video id="remote-video" autoplay playsinline></video>
-    
-    <div class="overlay">
-        <div class="controls">
-            <div id="status-tag">جاري البحث عن بث...</div>
-            <button class="btn btn-live" id="go-live-btn" onclick="startBroadcasting()">ابدأ بث مباشر (للبائع)</button>
-            <div id="error-log" class="error-msg"></div>
-            <h2 style="margin: 10px 0 5px 0;">N-PULSE Marketplace</h2>
-            <p style="margin: 0; font-size: 14px; opacity: 0.8;">معاينة المنتجات مباشرة من الشارقة</p>
+    <div class="main-container">
+        <div id="status-bar">جاري البحث عن بث مباشر...</div>
+        <video id="display-video" autoplay playsinline></video>
+
+        <div class="overlay">
+            <div class="controls">
+                <span class="live-tag">🔴 N-PULSE LIVE</span>
+                <h2 style="margin: 0 0 15px 0;">اكتشف المنتجات مباشرة</h2>
+                <button class="btn-live" id="action-btn" onclick="goLiveNow()">ابدأ بث منتجك الآن</button>
+            </div>
         </div>
     </div>
-</div>
 
 <script>
-    // إنشاء كائن Peer بدون إعدادات معقدة (يستخدم سيرفر PeerJS المجاني تلقائياً)
-    const peer = new Peer(); 
-    const videoElem = document.getElementById('remote-video');
-    const statusTag = document.getElementById('status-tag');
-    const errorLog = document.getElementById('error-log');
-    const goLiveBtn = document.getElementById('go-live-btn');
+    // 1. إعداد Pusher ببياناتك الخاصة
+    const pusher = new Pusher('ca8c11281ba306c108b9', {
+        cluster: 'ap2',
+        forceTLS: true
+    });
 
-    let myStream = null;
+    // القنوات الخاصة (Private) مطلوبة لإرسال أحداث العميل، لكن للتبسيط سنستخدم قناة عامة
+    // ملاحظة: تأكد من تفعيل Client Events في إعدادات Pusher
+    const channel = pusher.subscribe('cache-npulse-live');
 
-    // 1. عند فتح الصفحة: توليد ID ومعالجة الأخطاء
-    peer.on('open', (id) => {
-        console.log('معرفك الخاص هو: ' + id);
-        statusTag.innerText = "متصل بالشبكة. بانتظار بث مباشر...";
-        
-        // لمحاكاة "تيك توك": إذا كان هناك ID في الرابط، اتصل تلقائياً
-        const urlParams = new URLSearchParams(window.location.search);
-        const liveId = urlParams.get('live');
-        if (liveId) {
-            connectToStream(liveId);
+    const peer = new Peer();
+    const videoElem = document.getElementById('display-video');
+    const statusElem = document.getElementById('status-bar');
+    const actionBtn = document.getElementById('action-btn');
+
+    // 2. استقبال البث (للمشاهدين)
+    channel.bind('client-new-stream', (data) => {
+        if (data.peerId && data.peerId !== peer.id) {
+            statusElem.innerText = "تم العثور على بث! جاري الاتصال...";
+            connectToStream(data.peerId);
         }
     });
 
-    peer.on('error', (err) => {
-        showError("حدث خطأ في الاتصال: " + err.type);
-        console.error(err);
-    });
-
-    // 2. وظيفة البائع (المذيع)
-    async function startBroadcasting() {
+    // 3. بدء البث (للبائع)
+    async function goLiveNow() {
         try {
-            // طلب الكاميرا والمايك
-            myStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            videoElem.srcObject = myStream;
-            videoElem.muted = true; // المذيع لا يسمع صوته
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            videoElem.srcObject = stream;
+            videoElem.muted = true;
             
-            goLiveBtn.style.display = 'none';
-            statusTag.innerText = "🔴 أنت الآن تبث مباشرة";
-            statusTag.style.borderColor = "#2ecc71";
+            actionBtn.style.display = 'none';
+            statusElem.innerText = "أنت الآن لايف! الجميع يمكنهم رؤيتك.";
 
-            // تحديث الرابط ليكون قابلاً للمشاركة فوراً
-            const shareLink = window.location.origin + window.location.pathname + '?live=' + peer.id;
-            console.log("رابط البث الخاص بك: " + shareLink);
+            // إرسال الـ ID الخاص بك لكل المتصلين حالياً
+            channel.trigger('client-new-stream', { peerId: peer.id });
 
-            // استقبال المشاهدين
             peer.on('call', (call) => {
-                call.answer(myStream);
+                call.answer(stream);
             });
 
         } catch (err) {
-            showError("لم نتمكن من الوصول للكاميرا. تأكد من إعطاء الصلاحية.");
+            alert("يرجى تفعيل الكاميرا والميكروفون واستخدام رابط HTTPS");
             console.error(err);
         }
     }
 
-    // 3. وظيفة المشاهد (الاتصال التلقائي)
+    // 4. وظيفة الاتصال التلقائي
     function connectToStream(remoteId) {
-        statusTag.innerText = "جاري الاتصال بالبث...";
         const call = peer.call(remoteId, null);
-        
-        call.on('stream', (stream) => {
-            videoElem.srcObject = stream;
+        call.on('stream', (remoteStream) => {
+            videoElem.srcObject = remoteStream;
             videoElem.muted = false;
-            statusTag.innerText = "👁️ أنت تشاهد الآن";
-            goLiveBtn.style.display = 'none';
-        });
-
-        call.on('error', (err) => {
-            showError("فشل الاتصال بالبث.");
+            statusElem.innerText = "أنت تشاهد بثاً مباشراً الآن";
+            actionBtn.style.display = 'none';
         });
     }
 
-    function showError(msg) {
-        errorLog.innerText = msg;
-        errorLog.style.display = 'block';
-        setTimeout(() => { errorLog.style.display = 'none'; }, 5000);
-    }
+    // لتوليد ID فور فتح الصفحة
+    peer.on('open', (id) => {
+        console.log("معرفك جاهز: " + id);
+    });
 </script>
 
 </body>
