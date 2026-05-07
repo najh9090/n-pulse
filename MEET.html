@@ -2,30 +2,142 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Call - Link System</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background: #f0f2f5; }
-        .video-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
-        video { width: 45%; max-width: 400px; background: #222; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .controls { background: white; padding: 20px; border-radius: 10px; display: inline-block; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        button { padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
+        :root {
+            --primary: #007bff;
+            --danger: #dc3545;
+            --dark: #1a1a1a;
+            --bg: #121212;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            background: var(--bg); 
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 { font-weight: 300; margin-bottom: 20px; }
+
+        /* حاوية الفيديو */
+        .video-container { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .video-box {
+            position: relative;
+            background: #222;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            aspect-ratio: 4/3;
+        }
+
+        video { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover;
+            transform: scaleX(-1); /* لعمل تأثير المرآة للكاميرا */
+        }
+
+        /* أدوات التحكم */
+        .controls-bar {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 50px;
+            display: inline-flex;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-ctrl {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: 0.3s;
+            background: white;
+            color: var(--dark);
+        }
+
+        .btn-ctrl:hover { transform: scale(1.1); }
+        
+        .btn-ctrl.off {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* قسم الرابط */
+        #share-section {
+            background: #fff;
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        #meeting-link {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 250px;
+            text-align: center;
+        }
+
+        .btn-copy {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
     </style>
 </head>
 <body>
 
-    <div class="controls">
-        <h2 id="status">جاري التجهيز...</h2>
-        <div id="share-section" style="display:none;">
-            <p>أرسل هذا الرابط لصديقك لبدء المكالمة:</p>
-            <input type="text" id="meeting-link" readonly style="width: 300px; padding: 5px;">
-            <button onclick="copyLink()">نسخ الرابط</button>
-        </div>
+    <h2 id="status">جاري تشغيل الكاميرا...</h2>
+
+    <div id="share-section">
+        <p>أرسل الرابط لصديقك لبدء المحادثة:</p>
+        <input type="text" id="meeting-link" readonly>
+        <button class="btn-copy" onclick="copyLink()">نسخ الرابط</button>
     </div>
 
     <div class="video-container">
-        <video id="localVideo" autoplay muted playsinline></video>
-        <video id="remoteVideo" autoplay playsinline></video>
+        <div class="video-box">
+            <video id="localVideo" autoplay muted playsinline></video>
+            <div style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.5); padding:2px 10px; border-radius:5px; font-size:12px;">أنت</div>
+        </div>
+        <div class="video-box">
+            <video id="remoteVideo" autoplay playsinline></video>
+            <div style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.5); padding:2px 10px; border-radius:5px; font-size:12px;">الطرف الآخر</div>
+        </div>
+    </div>
+
+    <div class="controls-bar">
+        <button id="micBtn" class="btn-ctrl" onclick="toggleMic()">🎙️</button>
+        <button id="camBtn" class="btn-ctrl" onclick="toggleCam()">📷</button>
+        <button class="btn-ctrl off" onclick="location.href=location.pathname" title="إنهاء المكالمة">📞</button>
     </div>
 
     <script>
@@ -33,43 +145,46 @@
         const remoteVideo = document.getElementById('remoteVideo');
         const statusText = document.getElementById('status');
         
-        // 1. الحصول على الـ ID من الرابط (إذا كان موجوداً)
         const urlParams = new URLSearchParams(window.location.search);
         const roomID = urlParams.get('room');
 
         let peer;
         let localStream;
+        let isMicOn = true;
+        let isCamOn = true;
 
-        // تجهيز الكاميرا أولاً
+        // تشغيل الوسائط
         navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
             localStream = stream;
             localVideo.srcObject = stream;
 
-            // إذا لم يكن هناك ID في الرابط، أنت "المُنشئ"
             if (!roomID) {
-                peer = new Peer(); // إنشاء ID عشوائي
+                // وضع المنشئ (Host)
+                peer = new Peer(); 
                 peer.on('open', id => {
                     const inviteLink = window.location.origin + window.location.pathname + '?room=' + id;
                     document.getElementById('meeting-link').value = inviteLink;
                     document.getElementById('share-section').style.display = 'block';
-                    statusText.innerText = "في انتظار انضمام الطرف الآخر...";
+                    statusText.innerText = "بانتظار الطرف الآخر...";
                 });
             } else {
-                // أنت "المنضم" - استخدم ID مختلف لنفسك واتصل بصاحب الغرفة
+                // وضع المنضم (Guest)
                 peer = new Peer(); 
                 peer.on('open', () => {
-                    statusText.innerText = "جاري الاتصال بصاحب الغرفة...";
+                    statusText.innerText = "جاري الاتصال...";
                     const call = peer.call(roomID, localStream);
                     handleCall(call);
                 });
             }
 
-            // استقبال المكالمات (للمُنشئ)
             peer.on('call', call => {
                 call.answer(localStream);
                 handleCall(call);
             });
 
+        }).catch(err => {
+            statusText.innerText = "فشل الوصول للكاميرا/المايك. تأكد من إعطاء الصلاحيات.";
+            console.error(err);
         });
 
         function handleCall(call) {
@@ -80,11 +195,28 @@
             });
         }
 
+        // وظائف التحكم
+        function toggleMic() {
+            isMicOn = !isMicOn;
+            localStream.getAudioTracks()[0].enabled = isMicOn;
+            const btn = document.getElementById('micBtn');
+            btn.innerText = isMicOn ? "🎙️" : "🔇";
+            btn.classList.toggle('off', !isMicOn);
+        }
+
+        function toggleCam() {
+            isCamOn = !isCamOn;
+            localStream.getVideoTracks()[0].enabled = isCamOn;
+            const btn = document.getElementById('camBtn');
+            btn.innerText = isCamOn ? "📷" : "🚫";
+            btn.classList.toggle('off', !isCamOn);
+        }
+
         function copyLink() {
             const linkInput = document.getElementById('meeting-link');
             linkInput.select();
             document.execCommand('copy');
-            alert("تم نسخ الرابط! أرسله لصديقك الآن.");
+            alert("تم نسخ الرابط!");
         }
     </script>
 </body>
