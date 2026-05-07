@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Video Call - Link System</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f0f2f5; }
+        .video-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
+        video { width: 45%; max-width: 400px; background: #222; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .controls { background: white; padding: 20px; border-radius: 10px; display: inline-block; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        button { padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <h2 id="status">جاري التجهيز...</h2>
+        <div id="share-section" style="display:none;">
+            <p>أرسل هذا الرابط لصديقك لبدء المكالمة:</p>
+            <input type="text" id="meeting-link" readonly style="width: 300px; padding: 5px;">
+            <button onclick="copyLink()">نسخ الرابط</button>
+        </div>
+    </div>
+
+    <div class="video-container">
+        <video id="localVideo" autoplay muted playsinline></video>
+        <video id="remoteVideo" autoplay playsinline></video>
+    </div>
+
+    <script>
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const statusText = document.getElementById('status');
+        
+        // 1. الحصول على الـ ID من الرابط (إذا كان موجوداً)
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomID = urlParams.get('room');
+
+        let peer;
+        let localStream;
+
+        // تجهيز الكاميرا أولاً
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+            localStream = stream;
+            localVideo.srcObject = stream;
+
+            // إذا لم يكن هناك ID في الرابط، أنت "المُنشئ"
+            if (!roomID) {
+                peer = new Peer(); // إنشاء ID عشوائي
+                peer.on('open', id => {
+                    const inviteLink = window.location.origin + window.location.pathname + '?room=' + id;
+                    document.getElementById('meeting-link').value = inviteLink;
+                    document.getElementById('share-section').style.display = 'block';
+                    statusText.innerText = "في انتظار انضمام الطرف الآخر...";
+                });
+            } else {
+                // أنت "المنضم" - استخدم ID مختلف لنفسك واتصل بصاحب الغرفة
+                peer = new Peer(); 
+                peer.on('open', () => {
+                    statusText.innerText = "جاري الاتصال بصاحب الغرفة...";
+                    const call = peer.call(roomID, localStream);
+                    handleCall(call);
+                });
+            }
+
+            // استقبال المكالمات (للمُنشئ)
+            peer.on('call', call => {
+                call.answer(localStream);
+                handleCall(call);
+            });
+
+        });
+
+        function handleCall(call) {
+            call.on('stream', stream => {
+                remoteVideo.srcObject = stream;
+                statusText.innerText = "متصل الآن ✅";
+                document.getElementById('share-section').style.display = 'none';
+            });
+        }
+
+        function copyLink() {
+            const linkInput = document.getElementById('meeting-link');
+            linkInput.select();
+            document.execCommand('copy');
+            alert("تم نسخ الرابط! أرسله لصديقك الآن.");
+        }
+    </script>
+</body>
+</html>
