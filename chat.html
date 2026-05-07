@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-PULSE Public Chat</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: white; display: flex; justify-content: center; padding: 20px; }
+        .chat-container { background: #2d2d2d; padding: 20px; border-radius: 15px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #messages { height: 300px; border: 1px solid #444; overflow-y: auto; margin-bottom: 15px; padding: 15px; background: #252525; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 8px 12px; border-radius: 8px; max-width: 80%; font-size: 0.9em; }
+        .others { background: #3d3d3d; align-self: flex-start; }
+        .me { background: #007bff; align-self: flex-end; }
+        .system { color: #888; font-size: 0.7em; text-align: center; width: 100%; }
+        .controls { display: flex; gap: 10px; }
+        input { flex: 1; padding: 10px; border: none; border-radius: 5px; background: #444; color: white; }
+        button { padding: 10px 20px; border: none; border-radius: 5px; background: #28a745; color: white; cursor: pointer; font-weight: bold; }
+        button:hover { background: #218838; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <h2 style="text-align: center; color: #007bff;">N-PULSE Live Community</h2>
+    <div id="status" class="system">جاري الاتصال بالشبكة...</div>
+    
+    <div id="messages"></div>
+
+    <div class="controls">
+        <input type="text" id="message-input" placeholder="اكتب رسالة للجميع...">
+        <button onclick="broadcastMessage()">إرسال</button>
+    </div>
+</div>
+
+<script>
+    const myPeer = new Peer(); 
+    let connections = []; // مصفوفة لتخزين كل المتصلين
+    const statusEl = document.getElementById('status');
+    const messagesEl = document.getElementById('messages');
+
+    // 1. عند فتح اتصالي الخاص
+    myPeer.on('open', (id) => {
+        statusEl.innerText = "أنت متصل الآن كـ " + id;
+        // ملاحظة: في النسخة الحقيقية، تحتاج لطريقة لمعرفة الـ IDs للأشخاص الموجودين حالياً.
+        // بدون سيرفر، يجب كتابة الـ ID يدوياً أو استخدام "سيرفر وسيط" بسيط لجلب القائمة.
+    });
+
+    // 2. استقبال اتصال من أي شخص جديد يدخل الموقع
+    myPeer.on('connection', (conn) => {
+        addConnection(conn);
+    });
+
+    function addConnection(conn) {
+        conn.on('open', () => {
+            if (!connections.find(c => c.peer === conn.peer)) {
+                connections.push(conn);
+                appendMessage("نظام", `مستخدم جديد دخل الشات`, "system");
+            }
+            
+            // استقبال البيانات من هذا الشخص
+            conn.on('data', (data) => {
+                appendMessage("مستخدم آخر", data, "others");
+                // إعادة توجيه الرسالة للآخرين (Broadcast) لكي يراها الجميع
+                forwardToAll(data, conn.peer);
+            });
+        });
+    }
+
+    // 3. إرسال رسالة للجميع
+    function broadcastMessage() {
+        const input = document.getElementById('message-input');
+        const msg = input.value;
+        if (!msg) return;
+
+        connections.forEach(conn => {
+            if (conn.open) conn.send(msg);
+        });
+
+        appendMessage("أنت", msg, "me");
+        input.value = "";
+    }
+
+    // وظيفة لإرسال رسالة شخص لشخص آخر عبر جهازي (ليراها الجميع)
+    function forwardToAll(msg, senderId) {
+        connections.forEach(conn => {
+            if (conn.open && conn.peer !== senderId) {
+                conn.send(msg);
+            }
+        });
+    }
+
+    function appendMessage(sender, text, type) {
+        const div = document.createElement('div');
+        div.className = `msg ${type}`;
+        div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+        messagesEl.appendChild(div);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
