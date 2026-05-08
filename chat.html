@@ -3,90 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N-PULSE LIVE | FINAL</title>
+    <title>N-PULSE LIVE | البث المباشر الجماعي</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
     <style>
-        body { margin: 0; background: #000; color: white; font-family: sans-serif; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        video { width: 100%; height: 100%; object-fit: cover; background: #111; }
-        .controls { position: absolute; bottom: 30px; text-align: center; width: 100%; z-index: 100; }
-        .btn { padding: 15px 30px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .btn-start { background: #ff4757; color: white; }
+        body { margin: 0; background: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        video { width: 100%; height: 100%; object-fit: cover; background: #111; position: absolute; top: 0; left: 0; }
+        .ui-layer { position: relative; z-index: 10; text-align: center; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 50px; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent 40%); }
+        .btn { padding: 15px 35px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; font-size: 18px; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .btn-live { background: #ff4757; color: white; }
         .btn-view { background: #2ed573; color: white; display: none; }
-        #msg { margin-bottom: 10px; background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 20px; display: inline-block; }
+        #status-box { margin-bottom: 15px; }
+        #msg { background: rgba(255, 71, 87, 0.2); border: 1px solid #ff4757; padding: 8px 20px; border-radius: 20px; font-size: 14px; }
+        .logo { position: absolute; top: 20px; right: 20px; font-size: 24px; font-weight: bold; color: #ff4757; text-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
-    <video id="v" autoplay playsinline muted></video>
+    <div class="logo">N-PULSE LIVE</div>
     
-    <div class="controls">
-        <div id="msg">بانتظار إشارة البث...</div><br>
-        <button id="b1" class="btn btn-start" onclick="goLive()">ابدأ البث (بائع) 🔴</button>
-        <button id="b2" class="btn btn-view" onclick="showLive()">تشغيل الفيديو والصوت 🔊</button>
+    <video id="mainVideo" autoplay playsinline muted></video>
+    
+    <div class="ui-layer">
+        <div id="status-box">
+            <span id="msg">بانتظار بدء البث المباشر...</span>
+        </div>
+        <div>
+            <button id="hostBtn" class="btn btn-live" onclick="startBroadcasting()">ابدأ البث الآن 🔴</button>
+            <button id="clientBtn" class="btn btn-view" onclick="activateStream()">تشغيل الصوت والمشاهدة 🔊</button>
+        </div>
     </div>
 
 <script>
-    const config = { databaseURL: "https://npulse-live-default-rtdb.firebaseio.com" };
-    firebase.initializeApp(config);
+    // 1. إعداد Firebase
+    const firebaseConfig = { databaseURL: "https://npulse-live-default-rtdb.firebaseio.com" };
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // إضافة خوادم جوجل لتخطي جدران الحماية
+    // 2. إعداد PeerJS مع خوادم جوجل لتخطي الحماية
     const peer = new Peer({
         config: {'iceServers': [
             { url: 'stun:stun.l.google.com:19302' },
-            { url: 'stun:stun1.l.google.com:19302' }
+            { url: 'stun:stun1.l.google.com:19302' },
+            { url: 'stun:stun2.l.google.com:19302' }
         ]}
     });
 
-    const vid = document.getElementById('v');
-    const msg = document.getElementById('msg');
-    const b2 = document.getElementById('b2');
+    const videoArea = document.getElementById('mainVideo');
+    const statusMsg = document.getElementById('msg');
+    const viewBtn = document.getElementById('clientBtn');
+    let myStream;
 
-    peer.on('open', (id) => {
-        db.ref('live_stream_id').on('value', (snap) => {
-            const hostId = snap.val();
-            if (hostId && hostId !== id) {
-                msg.innerText = "البث المباشر متاح الآن!";
-                b2.style.display = 'inline-block';
+    // 3. مراقبة حالة البث
+    peer.on('open', (myID) => {
+        db.ref('live_stream_id').on('value', (snapshot) => {
+            const hostID = snapshot.val();
+            
+            if (hostID && hostID !== myID) {
+                statusMsg.innerText = "البث المباشر متوفر الآن!";
+                viewBtn.style.display = 'inline-block';
                 
-                // محاولة الاتصال
-                const call = peer.call(hostId, null);
-                if(call) {
-                    call.on('stream', (s) => { 
-                        vid.srcObject = s;
-                        vid.play();
-                    });
-                }
-            } else if (!hostId) {
-                msg.innerText = "لا يوجد بث حالياً";
-                b2.style.display = 'none';
-                vid.srcObject = null;
+                // طلب الاتصال بالبث
+                const call = peer.call(hostID, null);
+                call.on('stream', (incomingStream) => {
+                    videoArea.srcObject = incomingStream;
+                });
+            } else if (!hostID) {
+                statusMsg.innerText = "لا يوجد بث مباشر حالياً";
+                viewBtn.style.display = 'none';
+                videoArea.srcObject = null;
             }
         });
     });
 
-    async function goLive() {
+    // 4. وظيفة البائع (بدء الإرسال)
+    async function startBroadcasting() {
         try {
-            const s = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
-            vid.srcObject = s;
+            myStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            videoArea.srcObject = myStream;
+            videoArea.muted = true; // صامت عند البائع لمنع صدى الصوت
+            
+            // تحديث Firebase بالـ ID الجديد
             db.ref('live_stream_id').set(peer.id);
             db.ref('live_stream_id').onDisconnect().remove();
-            document.getElementById('b1').style.display = 'none';
-            msg.innerText = "أنت الآن لايف (البث يخرج من جهازك) ✅";
-            peer.on('call', (c) => c.answer(s));
-        } catch (e) {
-            alert("يرجى تفعيل الكاميرا");
+
+            document.getElementById('hostBtn').style.display = 'none';
+            statusMsg.innerText = "أنت الآن لايف وبثك متاح للجميع! 🔴";
+
+            // الرد على أي شخص يحاول المشاهدة
+            peer.on('call', (incomingCall) => {
+                incomingCall.answer(myStream);
+            });
+
+        } catch (err) {
+            alert("فشل الوصول للكاميرا. تأكد من إعطاء الصلاحية واستخدام HTTPS.");
+            console.error(err);
         }
     }
 
-    function showLive() {
-        vid.muted = false;
-        vid.play();
-        b2.style.display = 'none';
-        msg.innerText = "مشاهدة ممتعة لـ N-PULSE!";
+    // 5. وظيفة المشاهد (تفعيل الصوت)
+    function activateStream() {
+        videoArea.muted = false; // تشغيل الصوت للمشاهد
+        videoArea.play();
+        viewBtn.style.display = 'none';
+        statusMsg.innerText = "مشاهدة ممتعة على N-PULSE!";
     }
 </script>
+
 </body>
 </html>
