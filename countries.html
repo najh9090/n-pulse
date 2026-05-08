@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N-PULSE | الدول</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF6B00;
+    --orange-light: #FF8C35;
+    --orange-glow: rgba(255,107,0,0.15);
+    --dark: #0D0D0D;
+    --dark-2: #161616;
+    --dark-3: #1F1F1F;
+    --dark-4: #2A2A2A;
+    --white: #FFFFFF;
+    --gray: #888;
+    --green: #00C853;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* NAVBAR */
+  .navbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: rgba(13,13,13,0.9);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,107,0,0.2);
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 65px;
+  }
+  .navbar-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+  .navbar-logo span {
+    font-size: 22px; font-weight: 900;
+    color: var(--orange); letter-spacing: 1px;
+  }
+  .nav-back {
+    color: #ccc; text-decoration: none;
+    font-size: 14px; padding: 6px 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; transition: all 0.25s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-back:hover { border-color: var(--orange); color: var(--orange); }
+
+  /* HERO */
+  .page-hero {
+    padding: 110px 30px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(255,107,0,0.1), transparent 70%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,107,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,107,0,0.04) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+  .page-hero h1 {
+    position: relative;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 900; margin-bottom: 14px;
+  }
+  .page-hero h1 span { color: var(--orange); }
+  .page-hero p {
+    position: relative;
+    color: #777; font-size: 16px;
+  }
+
+  /* REGION SECTIONS */
+  .regions-wrap {
+    padding: 20px 30px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .region-block { margin-bottom: 50px; }
+
+  .region-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--orange);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,107,0,0.2);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .region-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,107,0,0.15);
+  }
+
+  .countries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 14px;
+  }
+
+  .country-card {
+    background: var(--dark-2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 22px 12px 18px;
+    text-align: center;
+    text-decoration: none;
+    color: #ccc;
+    transition: all 0.28s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .country-card:hover {
+    border-color: var(--orange);
+    background: rgba(255,107,0,0.06);
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(255,107,0,0.12);
+  }
+  .country-flag {
+    font-size: 36px;
+    line-height: 1;
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,0.4));
+    transition: transform 0.28s;
+  }
+  .country-card:hover .country-flag { transform: scale(1.15); }
+  .country-name {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  /* DIVIDER */
+  .section-divider {
+    width: 60px; height: 3px;
+    background: var(--orange);
+    border-radius: 2px;
+    margin: 0 auto 50px;
+  }
+
+  /* FORM SECTION */
+  .form-section {
+    background: var(--dark-2);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 80px 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .form-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(255,107,0,0.07), transparent);
+  }
+  .form-section h2 {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 900; margin-bottom: 10px;
+    position: relative;
+  }
+  .form-section > p {
+    color: #666; font-size: 15px;
+    margin-bottom: 40px; position: relative;
+  }
+
+  .publish-form-card {
+    background: var(--dark-3);
+    border: 1px solid rgba(255,107,0,0.2);
+    border-radius: 24px;
+    padding: 35px;
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+    text-align: right;
+  }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-size: 13px;
+    color: #888; margin-bottom: 6px; font-weight: 500;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: var(--dark-4);
+    border: 1.5px solid rgba(255,255,255,0.06);
+    color: white;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.25s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--orange);
+    background: #2f2f2f;
+  }
+  .form-group select option,
+  .form-group select optgroup { background: var(--dark-3); }
+  .form-group textarea { resize: vertical; }
+  .form-group textarea::placeholder { color: #3a3a3a; }
+
+  .dropzone {
+    border: 2px dashed rgba(255,107,0,0.3);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    background: var(--dark-4);
+  }
+  .dropzone:hover {
+    border-color: var(--orange);
+    background: rgba(255,107,0,0.06);
+  }
+  #img-preview {
+    display: flex; flex-wrap: wrap;
+    gap: 10px; margin-top: 12px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--orange);
+    color: white; border: none;
+    padding: 15px; border-radius: 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all 0.3s;
+    margin-top: 8px;
+  }
+  .submit-btn:hover {
+    background: var(--orange-light);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255,107,0,0.3);
+  }
+  .submit-btn:disabled {
+    background: #333; cursor: not-allowed; transform: none;
+  }
+
+  /* FOOTER */
+  .footer {
+    background: var(--dark);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 40px 30px 25px;
+    text-align: center;
+  }
+  .footer-logo { font-size: 26px; font-weight: 900; color: var(--orange); margin-bottom: 10px; }
+  .footer-copy { color: #333; font-size: 13px; margin-top: 20px; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.6s ease forwards; }
+  .fade-up-d1 { animation-delay: 0.1s; opacity: 0; }
+  .fade-up-d2 { animation-delay: 0.2s; opacity: 0; }
+
+  /* COUNTRY SECTIONS */
+  .country-sections-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 30px 40px;
+  }
+
+  .country-section {
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    background: var(--dark-2);
+    scroll-margin-top: 85px;
+  }
+
+  .cs-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--dark-3);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .cs-flag {
+    font-size: 42px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+  }
+
+  .cs-name {
+    font-size: 20px;
+    font-weight: 800;
+    color: white;
+  }
+
+  .cs-sub {
+    font-size: 12px;
+    color: #555;
+    margin-top: 2px;
+  }
+
+  .cs-back {
+    margin-right: auto;
+    margin-left: 0;
+    color: #555;
+    font-size: 12px;
+    text-decoration: none;
+    padding: 5px 12px;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 8px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .cs-back:hover {
+    color: var(--orange);
+    border-color: rgba(255,107,0,0.3);
+  }
+
+  .cs-ads-placeholder {
+    padding: 30px 24px;
+    color: #444;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+  }
+
+  @media (max-width: 768px) {
+    .country-sections-wrap { padding: 0 16px 30px; }
+    .cs-header { padding: 16px; gap: 12px; }
+    .cs-flag { font-size: 34px; }
+    .cs-name { font-size: 17px; }
+  }
+</style>
+</head>
+<body id="top">
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="navbar-logo">
+    <span>N-PULSE</span>
+  </a>
+  <a href="index.html" class="nav-back">← الرئيسية</a>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="hero-grid"></div>
+  <h1 class="fade-up">اختر <span>دولتك</span></h1>
+  <p class="fade-up fade-up-d1">تصفح الإعلانات حسب دولتك أو انشر إعلانك من أي مكان</p>
+</div>
+
+<!-- COUNTRIES QUICK NAV -->
+<div class="regions-wrap">
+
+  <!-- الخليج -->
+  <div class="region-block fade-up fade-up-d2">
+    <div class="region-title">🌍 دول الخليج</div>
+    <div class="countries-grid">
+      <a href="#ae" class="country-card"><span class="country-flag">🇦🇪</span><span class="country-name">الإمارات</span></a>
+      <a href="#sa" class="country-card"><span class="country-flag">🇸🇦</span><span class="country-name">السعودية</span></a>
+      <a href="#kw" class="country-card"><span class="country-flag">🇰🇼</span><span class="country-name">الكويت</span></a>
+      <a href="#bh" class="country-card"><span class="country-flag">🇧🇭</span><span class="country-name">البحرين</span></a>
+      <a href="#qa" class="country-card"><span class="country-flag">🇶🇦</span><span class="country-name">قطر</span></a>
+      <a href="#om" class="country-card"><span class="country-flag">🇴🇲</span><span class="country-name">عُمان</span></a>
+    </div>
+  </div>
+
+  <!-- الشام والعراق -->
+  <div class="region-block">
+    <div class="region-title">🌍 الشام والعراق</div>
+    <div class="countries-grid">
+      <a href="#jo" class="country-card"><span class="country-flag">🇯🇴</span><span class="country-name">الأردن</span></a>
+      <a href="#lb" class="country-card"><span class="country-flag">🇱🇧</span><span class="country-name">لبنان</span></a>
+      <a href="#sy" class="country-card"><span class="country-flag">🇸🇾</span><span class="country-name">سوريا</span></a>
+      <a href="#iq" class="country-card"><span class="country-flag">🇮🇶</span><span class="country-name">العراق</span></a>
+      <a href="#ps" class="country-card"><span class="country-flag">🇵🇸</span><span class="country-name">فلسطين</span></a>
+    </div>
+  </div>
+
+  <!-- شمال أفريقيا -->
+  <div class="region-block">
+    <div class="region-title">🌍 شمال أفريقيا</div>
+    <div class="countries-grid">
+      <a href="#eg" class="country-card"><span class="country-flag">🇪🇬</span><span class="country-name">مصر</span></a>
+      <a href="#ly" class="country-card"><span class="country-flag">🇱🇾</span><span class="country-name">ليبيا</span></a>
+      <a href="#tn" class="country-card"><span class="country-flag">🇹🇳</span><span class="country-name">تونس</span></a>
+      <a href="#dz" class="country-card"><span class="country-flag">🇩🇿</span><span class="country-name">الجزائر</span></a>
+      <a href="#ma" class="country-card"><span class="country-flag">🇲🇦</span><span class="country-name">المغرب</span></a>
+      <a href="#sd" class="country-card"><span class="country-flag">🇸🇩</span><span class="country-name">السودان</span></a>
+      <a href="#ye" class="country-card"><span class="country-flag">🇾🇪</span><span class="country-name">اليمن</span></a>
+    </div>
+  </div>
+
+  <!-- دول أخرى -->
+  <div class="region-block">
+    <div class="region-title">🌐 دول أخرى</div>
+    <div class="countries-grid">
+      <a href="#tr" class="country-card"><span class="country-flag">🇹🇷</span><span class="country-name">تركيا</span></a>
+      <a href="#pk" class="country-card"><span class="country-flag">🇵🇰</span><span class="country-name">باكستان</span></a>
+      <a href="#in" class="country-card"><span class="country-flag">🇮🇳</span><span class="country-name">الهند</span></a>
+      <a href="#gb" class="country-card"><span class="country-flag">🇬🇧</span><span class="country-name">المملكة المتحدة</span></a>
+      <a href="#us" class="country-card"><span class="country-flag">🇺🇸</span><span class="country-name">الولايات المتحدة</span></a>
+      <a href="#ca" class="country-card"><span class="country-flag">🇨🇦</span><span class="country-name">كندا</span></a>
+      <a href="#de" class="country-card"><span class="country-flag">🇩🇪</span><span class="country-name">ألمانيا</span></a>
+      <a href="#fr" class="country-card"><span class="country-flag">🇫🇷</span><span class="country-name">فرنسا</span></a>
+      <a href="#au" class="country-card"><span class="country-flag">🇦🇺</span><span class="country-name">أستراليا</span></a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== INDIVIDUAL COUNTRY SECTIONS ===== -->
+<div class="country-sections-wrap">
+
+  <!-- الخليج -->
+  <div id="ae" class="country-section"><div class="cs-header"><span class="cs-flag">🇦🇪</span><div><div class="cs-name">الإمارات</div><div class="cs-sub">United Arab Emirates</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="sa" class="country-section"><div class="cs-header"><span class="cs-flag">🇸🇦</span><div><div class="cs-name">السعودية</div><div class="cs-sub">Saudi Arabia</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="kw" class="country-section"><div class="cs-header"><span class="cs-flag">🇰🇼</span><div><div class="cs-name">الكويت</div><div class="cs-sub">Kuwait</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="bh" class="country-section"><div class="cs-header"><span class="cs-flag">🇧🇭</span><div><div class="cs-name">البحرين</div><div class="cs-sub">Bahrain</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="qa" class="country-section"><div class="cs-header"><span class="cs-flag">🇶🇦</span><div><div class="cs-name">قطر</div><div class="cs-sub">Qatar</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="om" class="country-section"><div class="cs-header"><span class="cs-flag">🇴🇲</span><div><div class="cs-name">عُمان</div><div class="cs-sub">Oman</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+
+  <!-- الشام والعراق -->
+  <div id="jo" class="country-section"><div class="cs-header"><span class="cs-flag">🇯🇴</span><div><div class="cs-name">الأردن</div><div class="cs-sub">Jordan</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="lb" class="country-section"><div class="cs-header"><span class="cs-flag">🇱🇧</span><div><div class="cs-name">لبنان</div><div class="cs-sub">Lebanon</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="sy" class="country-section"><div class="cs-header"><span class="cs-flag">🇸🇾</span><div><div class="cs-name">سوريا</div><div class="cs-sub">Syria</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="iq" class="country-section"><div class="cs-header"><span class="cs-flag">🇮🇶</span><div><div class="cs-name">العراق</div><div class="cs-sub">Iraq</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="ps" class="country-section"><div class="cs-header"><span class="cs-flag">🇵🇸</span><div><div class="cs-name">فلسطين</div><div class="cs-sub">Palestine</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+
+  <!-- شمال أفريقيا -->
+  <div id="eg" class="country-section"><div class="cs-header"><span class="cs-flag">🇪🇬</span><div><div class="cs-name">مصر</div><div class="cs-sub">Egypt</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="ly" class="country-section"><div class="cs-header"><span class="cs-flag">🇱🇾</span><div><div class="cs-name">ليبيا</div><div class="cs-sub">Libya</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="tn" class="country-section"><div class="cs-header"><span class="cs-flag">🇹🇳</span><div><div class="cs-name">تونس</div><div class="cs-sub">Tunisia</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="dz" class="country-section"><div class="cs-header"><span class="cs-flag">🇩🇿</span><div><div class="cs-name">الجزائر</div><div class="cs-sub">Algeria</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="ma" class="country-section"><div class="cs-header"><span class="cs-flag">🇲🇦</span><div><div class="cs-name">المغرب</div><div class="cs-sub">Morocco</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="sd" class="country-section"><div class="cs-header"><span class="cs-flag">🇸🇩</span><div><div class="cs-name">السودان</div><div class="cs-sub">Sudan</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="ye" class="country-section"><div class="cs-header"><span class="cs-flag">🇾🇪</span><div><div class="cs-name">اليمن</div><div class="cs-sub">Yemen</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+
+  <!-- دول أخرى -->
+  <div id="tr" class="country-section"><div class="cs-header"><span class="cs-flag">🇹🇷</span><div><div class="cs-name">تركيا</div><div class="cs-sub">Turkey</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="pk" class="country-section"><div class="cs-header"><span class="cs-flag">🇵🇰</span><div><div class="cs-name">باكستان</div><div class="cs-sub">Pakistan</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="in" class="country-section"><div class="cs-header"><span class="cs-flag">🇮🇳</span><div><div class="cs-name">الهند</div><div class="cs-sub">India</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="gb" class="country-section"><div class="cs-header"><span class="cs-flag">🇬🇧</span><div><div class="cs-name">المملكة المتحدة</div><div class="cs-sub">United Kingdom</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="us" class="country-section"><div class="cs-header"><span class="cs-flag">🇺🇸</span><div><div class="cs-name">الولايات المتحدة</div><div class="cs-sub">United States</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="ca" class="country-section"><div class="cs-header"><span class="cs-flag">🇨🇦</span><div><div class="cs-name">كندا</div><div class="cs-sub">Canada</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="de" class="country-section"><div class="cs-header"><span class="cs-flag">🇩🇪</span><div><div class="cs-name">ألمانيا</div><div class="cs-sub">Germany</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="fr" class="country-section"><div class="cs-header"><span class="cs-flag">🇫🇷</span><div><div class="cs-name">فرنسا</div><div class="cs-sub">France</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+  <div id="au" class="country-section"><div class="cs-header"><span class="cs-flag">🇦🇺</span><div><div class="cs-name">أستراليا</div><div class="cs-sub">Australia</div></div><a href="#top" class="cs-back">↑ للأعلى</a></div><div class="cs-ads-placeholder"><span>لا توجد إعلانات حالياً</span></div></div>
+
+</div>
+
+<div class="section-divider"></div>
+
+<!-- PUBLISH FORM -->
+<section class="form-section" id="form">
+  <h2>انشر إعلانك الآن 📢</h2>
+  <p>أرسل لنا تفاصيل منتجك وسننشره خلال دقائق</p>
+
+  <div class="publish-form-card">
+    <div class="form-group">
+      <label>اسم المنتج</label>
+      <input type="text" id="p_name" placeholder="مثلاً: هاتف سامسونج S23">
+    </div>
+    <div class="form-group">
+      <label>السعر</label>
+      <input type="number" id="p_price" placeholder="100">
+    </div>
+    <div class="form-group">
+      <label>رقم الواتساب</label>
+      <input type="tel" id="p_whatsapp" placeholder="971XXXXXXXXX">
+    </div>
+    <div class="form-group">
+      <label>البلد</label>
+      <select id="p_country">
+        <optgroup label="🌍 دول الخليج">
+          <option value="الإمارات">🇦🇪 الإمارات</option>
+          <option value="السعودية">🇸🇦 السعودية</option>
+          <option value="الكويت">🇰🇼 الكويت</option>
+          <option value="البحرين">🇧🇭 البحرين</option>
+          <option value="قطر">🇶🇦 قطر</option>
+          <option value="عُمان">🇴🇲 عُمان</option>
+        </optgroup>
+        <optgroup label="🌍 الشام والعراق">
+          <option value="الأردن">🇯🇴 الأردن</option>
+          <option value="لبنان">🇱🇧 لبنان</option>
+          <option value="سوريا">🇸🇾 سوريا</option>
+          <option value="العراق">🇮🇶 العراق</option>
+          <option value="فلسطين">🇵🇸 فلسطين</option>
+        </optgroup>
+        <optgroup label="🌍 شمال أفريقيا">
+          <option value="مصر">🇪🇬 مصر</option>
+          <option value="ليبيا">🇱🇾 ليبيا</option>
+          <option value="تونس">🇹🇳 تونس</option>
+          <option value="الجزائر">🇩🇿 الجزائر</option>
+          <option value="المغرب">🇲🇦 المغرب</option>
+          <option value="السودان">🇸🇩 السودان</option>
+          <option value="اليمن">🇾🇪 اليمن</option>
+        </optgroup>
+        <optgroup label="🌐 دول أخرى">
+          <option value="تركيا">🇹🇷 تركيا</option>
+          <option value="باكستان">🇵🇰 باكستان</option>
+          <option value="الهند">🇮🇳 الهند</option>
+          <option value="المملكة المتحدة">🇬🇧 المملكة المتحدة</option>
+          <option value="الولايات المتحدة">🇺🇸 الولايات المتحدة</option>
+          <option value="كندا">🇨🇦 كندا</option>
+          <option value="ألمانيا">🇩🇪 ألمانيا</option>
+          <option value="فرنسا">🇫🇷 فرنسا</option>
+          <option value="أستراليا">🇦🇺 أستراليا</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>حالة المنتج</label>
+      <select id="p_status">
+        <option value="جديد">✨ جديد</option>
+        <option value="مستعمل">🔄 مستعمل</option>
+        <option value="خدمة">🔧 خدمة</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>وصف المنتج</label>
+      <textarea id="p_desc" placeholder="اكتب وصفاً مفصلاً للمنتج، حالته، مميزاته..." rows="4"></textarea>
+    </div>
+    <div class="form-group">
+      <label>صور المنتج <span style="color:#555;font-size:12px;">(يمكنك اختيار أكثر من صورة)</span></label>
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('p_file').click()">
+        <div style="font-size:32px;margin-bottom:8px;">📷</div>
+        <div style="color:#666;font-size:14px;">اضغط لاختيار الصور</div>
+        <div style="color:#444;font-size:12px;margin-top:4px;">PNG, JPG, JPEG</div>
+      </div>
+      <input type="file" id="p_file" accept="image/*" multiple style="display:none" onchange="previewImages(this)">
+      <div id="img-preview"></div>
+    </div>
+    <button class="submit-btn" id="mainBtn" onclick="sendOrder()">إرسال الطلب 🚀</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-logo">N-PULSE</div>
+  <div class="footer-copy">© 2026 N-PULSE. جميع الحقوق محفوظة.</div>
+</footer>
+
+<script>
+function previewImages(input) {
+  const preview = document.getElementById('img-preview');
+  preview.innerHTML = '';
+  const files = Array.from(input.files);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;width:80px;height:80px;';
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.cssText = 'width:80px;height:80px;object-fit:cover;border-radius:10px;border:2px solid var(--orange);';
+      const del = document.createElement('span');
+      del.textContent = '✕';
+      del.style.cssText = 'position:absolute;top:-6px;left:-6px;background:#e74c3c;color:white;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;font-weight:bold;';
+      del.onclick = () => wrap.remove();
+      wrap.appendChild(img); wrap.appendChild(del);
+      preview.appendChild(wrap);
+    };
+    reader.readAsDataURL(file);
+  });
+  const dz = document.getElementById('dropzone');
+  dz.innerHTML = `<div style="font-size:20px;">✅</div><div style="color:var(--green);font-size:13px;margin-top:4px;">تم اختيار ${files.length} صورة</div>`;
+}
+
+async function sendOrder() {
+  const token = "8719573206:AAF5PzZBm9IVId32LaYzPLd3lgIPHxylRgI";
+  const chatId = "5707206170";
+  const name     = document.getElementById('p_name').value;
+  const price    = document.getElementById('p_price').value;
+  const whatsapp = document.getElementById('p_whatsapp').value;
+  const country  = document.getElementById('p_country').value;
+  const status   = document.getElementById('p_status').value;
+  const desc     = document.getElementById('p_desc').value || "بدون وصف";
+  const fileInput = document.getElementById('p_file');
+  const btn = document.getElementById('mainBtn');
+
+  if (!name || !price || !whatsapp || !fileInput.files[0]) {
+    alert("يرجى تعبئة جميع الخانات واختيار صورة واحدة على الأقل!");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "⏳ جاري الإرسال...";
+
+  const caption = `🚀 *طلب إعلان جديد - N-PULSE*\n\n📦 *المنتج:* ${name}\n📝 *الوصف:* ${desc}\n💰 *السعر:* ${price}\n🛠 *الحالة:* ${status}\n🌍 *البلد:* ${country}\n📱 *واتساب:* https://wa.me/${whatsapp}\n\n⚠️ يرجى مراجعة الدفع قبل النشر.`;
+
+  const files = Array.from(fileInput.files);
+  try {
+    if (files.length === 1) {
+      const formData = new FormData();
+      formData.append('chat_id', chatId);
+      formData.append('photo', files[0]);
+      formData.append('caption', caption);
+      formData.append('parse_mode', 'Markdown');
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
+      if (!res.ok) throw new Error((await res.json()).description);
+    } else {
+      const mediaGroup = files.map((f, i) => ({
+        type: 'photo', media: `attach://photo${i}`,
+        ...(i === 0 ? { caption, parse_mode: 'Markdown' } : {})
+      }));
+      const formData = new FormData();
+      formData.append('chat_id', chatId);
+      formData.append('media', JSON.stringify(mediaGroup));
+      files.forEach((f, i) => formData.append(`photo${i}`, f));
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendMediaGroup`, { method: 'POST', body: formData });
+      if (!res.ok) throw new Error((await res.json()).description);
+    }
+    alert("✅ تم الإرسال بنجاح! سيتم مراجعة إعلانك قريباً.");
+    location.reload();
+  } catch(err) {
+    alert("❌ فشل الإرسال: " + err.message);
+    btn.disabled = false;
+    btn.innerText = "إرسال الطلب 🚀";
+  }
+}
+</script>
+</body>
+</html>
