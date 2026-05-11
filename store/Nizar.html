@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إضافة منتج - متجر نزار</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; display: flex; justify-content: center; padding: 20px; }
+        .form-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { text-align: center; color: #333; }
+        input, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #0088cc; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0077b5; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>🏪 نشر منتج جديد</h2>
+    <input type="text" id="p_name" placeholder="اسم المنتج" required>
+    <input type="text" id="p_price" placeholder="السعر (درهم)" required>
+    <textarea id="p_desc" placeholder="وصف مختصر للمنتج" rows="3"></textarea>
+    <button onclick="sendNezar()">نشر المنتج الآن 🚀</button>
+</div>
+
+<script>
+function sendNezar() {
+    const token = "719573206:AAF5PzZBm9IVId32LaYzPLd3lgIPHxylRgI";
+    const chatId = "5707206170";
+    
+    const name = document.getElementById('p_name').value;
+    const price = document.getElementById('p_price').value;
+    const desc = document.getElementById('p_desc').value;
+
+    if(name == "" || price == "") {
+        alert("يرجى ملء الاسم والسعر");
+        return;
+    }
+
+    const message = `🏪 *نشر منتج جديد - متجر نزار*\n\n📦 *المنتج:* ${name}\n💰 *السعر:* ${price} درهم\n📝 *الوصف:* ${desc}`;
+
+    const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
+
+    fetch(url).then(response => {
+        if(response.ok) {
+            alert("تم النشر بنجاح على تلجرام باسم متجر نزار ✅");
+            document.getElementById('p_name').value = "";
+            document.getElementById('p_price').value = "";
+            document.getElementById('p_desc').value = "";
+        } else {
+            alert("حدث خطأ، تأكد من تشغيل البوت");
+        }
+    });
+}
+</script>
+
+</body>
+</html>
