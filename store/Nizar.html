@@ -1,9 +1,72 @@
-<html>
-    <head>
-        <title>storen</title>
-    </head>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة منتج - نزار متجر</title>
+    <!-- تأكد من وجود خط Tajawal في مشروعك -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* التنسيقات الأساسية لضمان ظهور الكود بشكل صحيح */
+        :root {
+            --orange: #ff6b00;
+            --dark-3: #1e1e1e;
+            --dark-4: #252525;
+        }
+        body { font-family: 'Tajawal', sans-serif; background: #121212; color: white; padding: 20px; }
+        .publish-section { max-width: 600px; margin: auto; background: #1a1a1a; padding: 20px; border-radius: 15px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #222; color: white; outline: none; box-sizing: border-box; }
+        .submit-btn { width: 100%; padding: 15px; background: var(--orange); border: none; color: white; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<section class="publish-section" id="add">
+    <h2>انشر إعلانك الآن 📢</h2>
+    <p>أرسل لنا تفاصيل منتجك وسننشره خلال دقائق</p>
+    <div class="publish-form-card">
+        <div class="form-group"><label>اسم المنتج</label><input type="text" id="p_name" placeholder="مثلاً: هاتف سامسونج S23"></div>
+        <div class="form-group"><label>السعر</label><input type="number" id="p_price" placeholder="100"></div>
+        <div class="form-group"><label>رقم الواتساب</label><input type="tel" id="p_whatsapp" placeholder="971XXXXXXXXX"></div>
+        <div class="form-group">
+            <label>البلد</label>
+            <select id="p_country">
+                <option value="الإمارات">🇦🇪 الإمارات</option>
+                <option value="السعودية">🇸🇦 السعودية</option>
+                <option value="الأردن">🇯🇴 الأردن</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>حالة المنتج</label>
+            <select id="p_status">
+                <option value="جديد">✨ جديد</option>
+                <option value="مستعمل">🔄 مستعمل</option>
+                <option value="خدمة">🔧 خدمة</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>وصف المنتج</label>
+            <textarea id="p_desc" placeholder="اكتب وصفاً مفصلاً للمنتج، حالته، مميزاته..." rows="4" style="width:100%;background:var(--dark-3);border:1.5px solid rgba(255,255,255,0.06);color:white;padding:13px 16px;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:15px;outline:none;resize:vertical;transition:all 0.25s;" onfocus="this.style.borderColor='var(--orange)';this.style.background='var(--dark-4)'" onblur="this.style.borderColor='rgba(255,255,255,0.06)';this.style.background='var(--dark-3)'"></textarea>
+        </div>
+        <div class="form-group">
+            <label>صور المنتج <span style="color:#666;font-size:12px;">(يمكنك اختيار أكثر من صورة)</span></label>
+            <div id="dropzone" onclick="document.getElementById('p_file').click()" style="border:2px dashed rgba(255,107,0,0.3);border-radius:14px;padding:24px;text-align:center;cursor:pointer;transition:all 0.25s;background:var(--dark-3);" onmouseover="this.style.borderColor='var(--orange)';this.style.background='rgba(255,107,0,0.06)'" onmouseout="this.style.borderColor='rgba(255,107,0,0.3)';this.style.background='var(--dark-3)'">
+                <div style="font-size:32px;margin-bottom:8px;">📷</div>
+                <div style="color:#888;font-size:14px;">اضغط لاختيار الصور</div>
+                <div style="color:#555;font-size:12px;margin-top:4px;">PNG, JPG, JPEG</div>
+            </div>
+            <input type="file" id="p_file" accept="image/*" multiple style="display:none" onchange="previewImages(this)">
+            <div id="img-preview" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;"></div>
+        </div>
+        <button class="submit-btn" id="mainBtn" onclick="sendOrder()">إرسال الطلب 🚀</button>
+    </div>
+</section>
+
 <script>
-// وظيفة معاينة الصور بدون تغيير أي id
+// دالة معاينة الصور
 function previewImages(input) {
     const preview = document.getElementById('img-preview');
     preview.innerHTML = '';
@@ -20,13 +83,13 @@ function previewImages(input) {
     }
 }
 
-// وظيفة الإرسال البرمجية
+// دالة إرسال الطلب للتلجرام
 async function sendOrder() {
     const token = "719573206:AAF5PzZBm9IVId32LaYzPLd3lgIPHxylRgI";
     const chatId = "5707206170";
     const btn = document.getElementById('mainBtn');
 
-    // سحب البيانات من الـ IDs التي حددتها أنت
+    // جلب البيانات من الـ IDs الأصلية
     const name = document.getElementById('p_name').value;
     const price = document.getElementById('p_price').value;
     const whatsapp = document.getElementById('p_whatsapp').value;
@@ -36,15 +99,15 @@ async function sendOrder() {
     const fileInput = document.getElementById('p_file');
 
     if (!name || !price || !whatsapp) {
-        alert("تأكد من ملء الاسم والسعر والواتساب");
+        alert("يرجى ملء الحقول الأساسية (الاسم، السعر، الواتساب)");
         return;
     }
 
-    btn.innerText = "جاري النشر... ⏳";
+    btn.innerText = "جاري النشر في متجر نزار... ⏳";
     btn.disabled = true;
 
-    // تنسيق الرسالة لتصل باسم نزار متجر
-    const caption = `🏪 *نشر منتج جديد - نزار متجر*\n\n` +
+    // تنسيق نص الرسالة باسم "متجر نزار"
+    const caption = `🏪 *نشر منتج جديد - متجر نزار*\n\n` +
                     `📦 *المنتج:* ${name}\n` +
                     `💰 *السعر:* ${price}\n` +
                     `🌍 *البلد:* ${country}\n` +
@@ -59,7 +122,7 @@ async function sendOrder() {
 
     let url = `https://api.telegram.org/bot${token}/sendMessage`;
 
-    // التعامل مع الصور إذا تم اختيارها
+    // إذا اختار المستخدم صورة، نستخدم sendPhoto
     if (fileInput.files && fileInput.files[0]) {
         url = `https://api.telegram.org/bot${token}/sendPhoto`;
         formData.append('photo', fileInput.files[0]);
@@ -70,19 +133,21 @@ async function sendOrder() {
     try {
         const response = await fetch(url, { method: 'POST', body: formData });
         if (response.ok) {
-            alert("تم الإرسال بنجاح باسم نزار متجر ✅");
-            // تنظيف الحقول مع الحفاظ على الهيكل
+            alert("تم إرسال الإعلان بنجاح إلى متجر نزار ✅");
+            // تصفير الخانات بعد النجاح
             document.querySelectorAll('#add input, #add textarea').forEach(el => el.value = '');
             document.getElementById('img-preview').innerHTML = '';
         } else {
-            alert("خطأ! تأكد من تشغيل البوت وأرسل له /start");
+            alert("حدث خطأ، تأكد من أنك بدأت المحادثة مع البوت (أرسل /start)");
         }
     } catch (err) {
-        alert("فشل الاتصال، تحقق من الشبكة");
+        alert("فشل في الاتصال بالسيرفر");
     } finally {
         btn.innerText = "إرسال الطلب 🚀";
         btn.disabled = false;
     }
 }
 </script>
+
+</body>
 </html>
