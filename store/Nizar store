@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نزار متجر - إلكترونيات حلوة ورخيصة</title>
+    <style>
+        :root {
+            --primary-color: #25d366; /* لون واتساب */
+            --dark-color: #1a1a1a;
+            --light-bg: #f4f4f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 { color: var(--dark-color); }
+        
+        .price {
+            font-size: 1.5rem;
+            color: #e63946;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .btn-buy {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-buy:hover {
+            background-color: #128c7e;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+        }
+
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            background: #ddd;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>نزار متجر 🏪</h1>
+    <p>أفضل الإلكترونيات في الإمارات بأقل الأسعار</p>
+</header>
+
+<div class="container">
+    <!-- منتج 1 -->
+    <div class="card">
+        <h3>سماعات بلوتوث Pro</h3>
+        <p>عزل ضوضاء وصوت نقي جداً</p>
+        <div class="price">89 درهم</div>
+        <a href="https://wa.me/971501220185?text=أريد+طلب+سماعة+بلوتوث" class="btn-buy">طلب عبر واتساب ✅</a>
+    </div>
+
+    <!-- منتج 2 -->
+    <div class="card">
+        <h3>ساعة ذكية Ultra</h3>
+        <p>تدعم المكالمات والرياضة</p>
+        <div class="price:">120 درهم</div>
+        <a href="https://wa.me/971501220185?text=أريد+طلب+ساعة+ذكية" class="btn-buy">طلب عبر واتساب ✅</a>
+    </div>
+
+    <!-- منتج 3 -->
+    <div class="card">
+        <h3>باور بانك 20,000</h3>
+        <p>شحن سريع لجميع الهواتف</p>
+        <div class="price">75 درهم</div>
+        <a href="https://wa.me/971501220185?text=أريد+طلب+باور+بانك" class="btn-buy">طلب عبر واتساب ✅</a>
+    </div>
+</div>
+
+<footer>
+    <p>صاحب المتجر: نزار | الإمارات العربية المتحدة</p>
+</footer>
+
+</body>
+</html>
