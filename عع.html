@@ -1022,10 +1022,6 @@ function toggleCam() {
 
 async function toggleScreenShare() {
   if (screenStream) { stopScreenShare(); return; }
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-    toast('⚠️ جهازك لا يدعم مشاركة الشاشة');
-    return;
-  }
   try {
     screenStream = await navigator.mediaDevices.getDisplayMedia({
       video: { frameRate: { ideal: 15 } },
