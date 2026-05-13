@@ -671,10 +671,17 @@ let screenStream = null;
 let isAdmin = false;
 let roomCode = '';
 let guestName = '';
-let connections = {}; // peerId -> conn
-let calls = {};       // peerId -> call
-let participants = []; // {id, name}
+let myPeerId = '';
+
+// connections[peerId] = DataConnection
+let connections = {};
+// calls[peerId] = MediaConnection
+let calls = {};
+// participants[peerId] = { id, name }  (admin stores all; guest stores all)
+let participants = {};
+
 let micOn = true, camOn = true;
+let guestMicOn = true, guestCamOn = true;
 
 // ===========================
 // SCREENS
@@ -705,11 +712,76 @@ function toast(msg, dur = 3000) {
 }
 
 function getInitials(name) {
+  if (!name) return '؟';
   return name.trim().split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase() || '؟';
 }
 
 function getMeetingURL() {
   return `${location.origin}${location.pathname}?room=${roomCode}`;
+}
+
+function safeId(id) { return id.replace(/[^a-zA-Z0-9]/g,''); }
+
+// ===========================
+// SHARED: add/remove video tile
+// ===========================
+function addVideoTile(peerId, stream, gridId, label) {
+  const sid = safeId(peerId);
+  if (document.getElementById('tile-' + sid)) {
+    // tile exists — just update stream
+    const v = document.getElementById('v-' + sid);
+    if (v) v.srcObject = stream;
+    return;
+  }
+  const tile = document.createElement('div');
+  tile.className = 'video-tile';
+  tile.id = 'tile-' + sid;
+  tile.innerHTML = `<video id="v-${sid}" autoplay playsinline></video><div class="tile-label">${label || 'مشارك'}</div>`;
+  document.getElementById(gridId).appendChild(tile);
+  const v = document.getElementById('v-' + sid);
+  v.srcObject = stream;
+  // Unmute audio — video elements are muted by default unless playsinline
+  v.muted = false;
+}
+
+function removeVideoTile(peerId) {
+  const tile = document.getElementById('tile-' + safeId(peerId));
+  if (tile) tile.remove();
+}
+
+// ===========================
+// SHARED: call a peer (outgoing)
+// ===========================
+function callPeer(remotePeerId) {
+  if (!localStream || calls[remotePeerId]) return;
+  const call = peer.call(remotePeerId, localStream);
+  calls[remotePeerId] = call;
+  const gridId = isAdmin ? 'admin-video-grid' : 'guest-video-grid';
+  call.on('stream', remoteStream => {
+    const p = participants[remotePeerId];
+    addVideoTile(remotePeerId, remoteStream, gridId, p ? p.name : 'مشارك');
+    if (!isAdmin) document.getElementById('guest-connecting').style.display = 'none';
+  });
+  call.on('close', () => { removeVideoTile(remotePeerId); delete calls[remotePeerId]; });
+  call.on('error', () => { removeVideoTile(remotePeerId); delete calls[remotePeerId]; });
+}
+
+// ===========================
+// SHARED: answer incoming calls
+// ===========================
+function setupCallAnswering() {
+  peer.on('call', call => {
+    call.answer(localStream || new MediaStream());
+    calls[call.peer] = call;
+    const gridId = isAdmin ? 'admin-video-grid' : 'guest-video-grid';
+    call.on('stream', remoteStream => {
+      const p = participants[call.peer];
+      addVideoTile(call.peer, remoteStream, gridId, p ? p.name : 'مشارك');
+      if (!isAdmin) document.getElementById('guest-connecting').style.display = 'none';
+    });
+    call.on('close', () => { removeVideoTile(call.peer); delete calls[call.peer]; });
+    call.on('error', () => { removeVideoTile(call.peer); delete calls[call.peer]; });
+  });
 }
 
 // ===========================
@@ -727,120 +799,99 @@ async function startAsAdmin() {
     localStream = null;
   }
 
-  // Init PeerJS with the room code as ID
-  const peerId = 'ADMIN-' + roomCode;
-  peer = new Peer(peerId, {
-    host: '0.peerjs.com',
-    port: 443,
-    secure: true
-  });
+  myPeerId = 'ADMIN-' + roomCode;
+  peer = new Peer(myPeerId, { host: '0.peerjs.com', port: 443, secure: true });
 
-  peer.on('open', id => {
-    const url = getMeetingURL();
-    document.getElementById('meeting-link-display').textContent = url;
+  peer.on('open', () => {
+    document.getElementById('meeting-link-display').textContent = getMeetingURL();
     toast('✅ الاجتماع جاهز! شارك الرابط');
   });
 
+  // Answer video calls from guests
+  setupCallAnswering();
+
+  // Handle incoming data connections from guests
   peer.on('connection', conn => {
     conn.on('open', () => {
-      // Receive guest info
-      conn.on('data', data => {
-        if (data.type === 'join') {
-          connections[conn.peer] = conn;
-          participants.push({ id: conn.peer, name: data.name });
-          updateParticipantsList();
-          updateOnlineCount();
-          // Notify all others
-          broadcastParticipants();
-          toast(`👋 ${data.name} انضم للاجتماع`);
-        }
-      });
-
-      conn.on('close', () => {
-        const p = participants.find(x => x.id === conn.peer);
-        if (p) toast(`👋 ${p.name} غادر الاجتماع`);
-        participants = participants.filter(x => x.id !== conn.peer);
-        delete connections[conn.peer];
-        if (calls[conn.peer]) calls[conn.peer].close();
-        delete calls[conn.peer];
-        // Remove video tile
-        const tile = document.getElementById('tile-' + conn.peer.replace(/[^a-zA-Z0-9]/g,''));
-        if (tile) tile.remove();
-        updateParticipantsList();
-        updateOnlineCount();
-        broadcastParticipants();
-      });
+      conn.on('data', data => adminHandleData(conn, data));
+      conn.on('close', () => adminGuestLeft(conn.peer));
+      conn.on('error', () => adminGuestLeft(conn.peer));
     });
   });
 
-  peer.on('call', call => {
-    call.answer(localStream);
-    calls[call.peer] = call;
-    call.on('stream', remoteStream => {
-      addRemoteVideoTile(call.peer, remoteStream, 'admin-video-grid');
-    });
-    call.on('close', () => {
-      const safeId = call.peer.replace(/[^a-zA-Z0-9]/g,'');
-      const tile = document.getElementById('tile-' + safeId);
-      if (tile) tile.remove();
-    });
-  });
-
-  peer.on('error', err => {
-    toast('⚠️ خطأ في الاتصال: ' + err.type);
-  });
-
+  peer.on('error', err => toast('⚠️ خطأ: ' + err.type));
   showScreen('screen-admin');
+}
 
-  // Check URL params for auto-fill
-  const params = new URLSearchParams(location.search);
-  if (params.get('room') && params.get('room') === roomCode) {
-    // same session
+function adminHandleData(conn, data) {
+  if (data.type === 'join') {
+    const newId = conn.peer;
+    const newName = data.name;
+
+    // Tell the new guest: who is already here (including admin)
+    const existing = Object.values(participants);
+    conn.send({
+      type: 'welcome',
+      you: newId,
+      peers: [
+        { id: myPeerId, name: 'الأدمن' },
+        ...existing.map(p => ({ id: p.id, name: p.name }))
+      ]
+    });
+
+    // Tell everyone else: new guest joined
+    Object.values(connections).forEach(c => {
+      c.send({ type: 'peer-joined', id: newId, name: newName });
+    });
+
+    // Register
+    participants[newId] = { id: newId, name: newName };
+    connections[newId] = conn;
+
+    // Admin calls the new guest so admin audio/video reaches them
+    setTimeout(() => callPeer(newId), 600);
+
+    adminUpdateUI();
+    toast(`👋 ${newName} انضم للاجتماع`);
   }
 }
 
-function broadcastParticipants() {
-  const list = participants.map(p => ({ id: p.id, name: p.name }));
-  Object.values(connections).forEach(conn => {
-    conn.send({ type: 'participants', list: [{ id: 'admin', name: 'الأدمن (منظم)' }, ...list] });
+function adminGuestLeft(peerId) {
+  const p = participants[peerId];
+  if (p) toast(`👋 ${p.name} غادر الاجتماع`);
+  delete participants[peerId];
+  delete connections[peerId];
+  if (calls[peerId]) { calls[peerId].close(); delete calls[peerId]; }
+  removeVideoTile(peerId);
+
+  // Notify remaining guests
+  Object.values(connections).forEach(c => {
+    c.send({ type: 'peer-left', id: peerId });
   });
+
+  adminUpdateUI();
 }
 
-function updateParticipantsList() {
+function adminUpdateUI() {
+  // participants list
   const el = document.getElementById('participants-list');
+  const list = Object.values(participants);
   let html = `<div class="participant-item">
     <div class="p-avatar">أ</div>
-    <div><div class="p-name">أنت</div><div class="p-role">أدمن · منظم الاجتماع</div></div>
+    <div><div class="p-name">أنت</div><div class="p-role">أدمن · منظم</div></div>
   </div>`;
-  participants.forEach(p => {
+  list.forEach(p => {
     html += `<div class="participant-item">
       <div class="p-avatar">${getInitials(p.name)}</div>
       <div><div class="p-name">${p.name}</div><div class="p-role">مشارك</div></div>
     </div>`;
   });
   el.innerHTML = html;
-}
-
-function updateOnlineCount() {
-  const count = participants.length + 1;
-  document.getElementById('admin-online-count').textContent = count + ' متصل';
-}
-
-function addRemoteVideoTile(peerId, stream, gridId) {
-  const safeId = peerId.replace(/[^a-zA-Z0-9]/g,'');
-  if (document.getElementById('tile-' + safeId)) return;
-  const p = participants.find(x => x.id === peerId);
-  const label = p ? p.name : 'مشارك';
-  const tile = document.createElement('div');
-  tile.className = 'video-tile';
-  tile.id = 'tile-' + safeId;
-  tile.innerHTML = `<video id="v-${safeId}" autoplay playsinline></video><div class="tile-label">${label}</div>`;
-  document.getElementById(gridId).appendChild(tile);
-  document.getElementById('v-' + safeId).srcObject = stream;
+  document.getElementById('admin-online-count').textContent = (list.length + 1) + ' متصل';
 }
 
 // ===========================
-// CONTROLS - ADMIN
+// ADMIN CONTROLS
 // ===========================
 function toggleMic() {
   if (!localStream) return;
@@ -861,30 +912,21 @@ function toggleCam() {
 }
 
 async function toggleScreenShare() {
-  if (screenStream) {
-    stopScreenShare();
-    return;
-  }
+  if (screenStream) { stopScreenShare(); return; }
   try {
     screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-    const preview = document.getElementById('screen-share-preview');
-    preview.srcObject = screenStream;
-    preview.style.display = 'block';
+    document.getElementById('screen-share-preview').srcObject = screenStream;
+    document.getElementById('screen-share-preview').style.display = 'block';
     document.getElementById('screen-share-panel').style.display = 'block';
     document.getElementById('btn-screen').classList.add('active');
-
-    // Replace video track in all peer calls
-    const videoTrack = screenStream.getVideoTracks()[0];
-    Object.values(calls).forEach(call => {
-      const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-      if (sender) sender.replaceTrack(videoTrack);
+    const vt = screenStream.getVideoTracks()[0];
+    Object.values(calls).forEach(c => {
+      const s = c.peerConnection.getSenders().find(x => x.track && x.track.kind === 'video');
+      if (s) s.replaceTrack(vt);
     });
-
-    screenStream.getVideoTracks()[0].onended = () => stopScreenShare();
+    vt.onended = stopScreenShare;
     toast('🖥️ مشاركة الشاشة بدأت');
-  } catch(e) {
-    toast('❌ تعذر مشاركة الشاشة');
-  }
+  } catch(e) { toast('❌ تعذر مشاركة الشاشة'); }
 }
 
 function stopScreenShare() {
@@ -894,13 +936,11 @@ function stopScreenShare() {
   document.getElementById('screen-share-preview').style.display = 'none';
   document.getElementById('screen-share-panel').style.display = 'none';
   document.getElementById('btn-screen').classList.remove('active');
-
-  // Restore camera track
   if (localStream) {
-    const videoTrack = localStream.getVideoTracks()[0];
-    Object.values(calls).forEach(call => {
-      const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-      if (sender && videoTrack) sender.replaceTrack(videoTrack);
+    const vt = localStream.getVideoTracks()[0];
+    Object.values(calls).forEach(c => {
+      const s = c.peerConnection.getSenders().find(x => x.track && x.track.kind === 'video');
+      if (s && vt) s.replaceTrack(vt);
     });
   }
   toast('⏹️ توقفت مشاركة الشاشة');
@@ -920,17 +960,11 @@ function endMeeting() {
 // SHARE LINK
 // ===========================
 function copyLink() {
-  const url = getMeetingURL();
-  navigator.clipboard.writeText(url).then(() => toast('✅ تم نسخ الرابط'));
+  navigator.clipboard.writeText(getMeetingURL()).then(() => toast('✅ تم نسخ الرابط'));
 }
-
 function shareLink() {
-  const url = getMeetingURL();
-  if (navigator.share) {
-    navigator.share({ title: 'CALLING1PLAN - اجتماع', text: `انضم للاجتماع: ${roomCode}`, url });
-  } else {
-    copyLink();
-  }
+  if (navigator.share) navigator.share({ title: 'CALLING1PLAN', url: getMeetingURL() });
+  else copyLink();
 }
 
 // ===========================
@@ -938,16 +972,13 @@ function shareLink() {
 // ===========================
 function showGuestJoin() {
   const params = new URLSearchParams(location.search);
-  if (params.get('room')) {
-    document.getElementById('guest-room-code').value = params.get('room');
-  }
+  if (params.get('room')) document.getElementById('guest-room-code').value = params.get('room');
   showScreen('screen-guest');
 }
 
 async function joinMeeting() {
   guestName = document.getElementById('guest-name').value.trim();
   const code = document.getElementById('guest-room-code').value.trim().toUpperCase();
-
   if (!guestName) { toast('⚠️ أدخل اسمك أولاً'); return; }
   if (!code) { toast('⚠️ أدخل رمز الاجتماع'); return; }
 
@@ -955,7 +986,6 @@ async function joinMeeting() {
   document.getElementById('room-code-display').textContent = roomCode;
   document.getElementById('guest-name-badge').textContent = guestName;
   document.getElementById('guest-local-label').textContent = guestName;
-
   showScreen('screen-meeting');
   document.getElementById('guest-connecting').style.display = 'flex';
 
@@ -967,64 +997,111 @@ async function joinMeeting() {
     localStream = null;
   }
 
-  const guestPeerId = 'GUEST-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
-  peer = new Peer(guestPeerId, {
-    host: '0.peerjs.com',
-    port: 443,
-    secure: true
-  });
+  myPeerId = 'GUEST-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
+  peer = new Peer(myPeerId, { host: '0.peerjs.com', port: 443, secure: true });
 
-  peer.on('open', id => {
+  peer.on('open', () => {
+    // Answer calls from others in mesh
+    setupCallAnswering();
+
+    // Handle incoming data from others
+    peer.on('connection', conn => {
+      conn.on('open', () => {
+        conn.on('data', data => guestHandleData(conn, data));
+        conn.on('close', () => guestPeerLeft(conn.peer));
+      });
+    });
+
+    // Connect to admin
     const adminId = 'ADMIN-' + roomCode;
+    const adminConn = peer.connect(adminId);
+    connections[adminId] = adminConn;
 
-    // Data connection
-    const conn = peer.connect(adminId);
-    conn.on('open', () => {
-      conn.send({ type: 'join', name: guestName });
-      document.getElementById('guest-connecting').style.display = 'none';
-      toast(`✅ انضممت للاجتماع!`);
-
-      conn.on('data', data => {
-        if (data.type === 'participants') {
-          updateGuestParticipants(data.list);
-        }
-        if (data.type === 'end') {
-          toast('📵 الأدمن أنهى الاجتماع');
-          setTimeout(() => location.href = location.pathname, 2000);
-        }
-      });
-
-      conn.on('close', () => {
-        toast('⚠️ انقطع الاتصال');
-      });
+    adminConn.on('open', () => {
+      adminConn.send({ type: 'join', name: guestName });
+      adminConn.on('data', data => guestHandleData(adminConn, data));
+      adminConn.on('close', () => { toast('⚠️ انقطع الاتصال بالأدمن'); });
     });
 
-    conn.on('error', err => {
+    adminConn.on('error', () => {
       document.getElementById('guest-connecting').style.display = 'none';
-      toast('❌ لم يتم العثور على الاجتماع. تحقق من الرمز');
+      toast('❌ لم يُعثر على الاجتماع. تحقق من الرمز');
     });
 
-    // Video call
-    if (localStream) {
-      const call = peer.call(adminId, localStream);
-      call.on('stream', remoteStream => {
-        addRemoteVideoTile(adminId, remoteStream, 'guest-video-grid');
-        document.getElementById('guest-connecting').style.display = 'none';
-      });
-      calls[adminId] = call;
-    }
+    // Admin will call us after receiving 'join' — we don't initiate
   });
 
   peer.on('error', err => {
     document.getElementById('guest-connecting').style.display = 'none';
-    toast('❌ خطأ: ' + err.type + ' — تحقق من الرمز');
+    toast('❌ خطأ: ' + err.type);
   });
 }
 
-function updateGuestParticipants(list) {
+function guestHandleData(conn, data) {
+  if (data.type === 'welcome') {
+    // Admin told us who's here
+    // Admin will call us for audio/video; we call existing guests only
+    data.peers.forEach(p => {
+      if (p.id === myPeerId) return; // skip self
+      participants[p.id] = { id: p.id, name: p.name };
+      if (p.id !== conn.peer) { // skip admin (admin calls us)
+        callPeer(p.id);
+      }
+    });
+    guestUpdateUI();
+    toast('✅ انضممت للاجتماع!');
+    document.getElementById('guest-connecting').style.display = 'none';
+  }
+
+  if (data.type === 'peer-joined') {
+    participants[data.id] = { id: data.id, name: data.name };
+    // The new guest will call us; we don't need to call them
+    // But we send them a data connection so they know our name
+    const c = peer.connect(data.id);
+    connections[data.id] = c;
+    c.on('open', () => {
+      c.send({ type: 'hello', name: guestName });
+      c.on('data', d => guestHandleData(c, d));
+      c.on('close', () => guestPeerLeft(data.id));
+    });
+    toast(`👋 ${data.name} انضم`);
+    guestUpdateUI();
+  }
+
+  if (data.type === 'hello') {
+    // Update name from peer
+    if (participants[conn.peer]) participants[conn.peer].name = data.name;
+    // Update tile label
+    const lbl = document.querySelector(`#tile-${safeId(conn.peer)} .tile-label`);
+    if (lbl) lbl.textContent = data.name;
+    guestUpdateUI();
+  }
+
+  if (data.type === 'peer-left') {
+    guestPeerLeft(data.id);
+  }
+
+  if (data.type === 'end') {
+    toast('📵 الأدمن أنهى الاجتماع');
+    setTimeout(() => location.href = location.pathname, 2000);
+  }
+}
+
+function guestPeerLeft(peerId) {
+  const p = participants[peerId];
+  if (p) toast(`👋 ${p.name} غادر`);
+  delete participants[peerId];
+  delete connections[peerId];
+  if (calls[peerId]) { calls[peerId].close(); delete calls[peerId]; }
+  removeVideoTile(peerId);
+  guestUpdateUI();
+}
+
+function guestUpdateUI() {
+  const list = Object.values(participants);
   const el = document.getElementById('guest-participants-list');
-  const count = list.length + 1;
-  document.getElementById('meeting-online-count').textContent = count + ' متصل';
+  document.getElementById('meeting-online-count').textContent = (list.length + 1) + ' متصل';
+  if (!list.length) { el.innerHTML = '<div class="empty">لا يوجد مشاركون بعد</div>'; return; }
   el.innerHTML = list.map(p => `
     <div class="participant-item">
       <div class="p-avatar">${getInitials(p.name)}</div>
@@ -1033,10 +1110,8 @@ function updateGuestParticipants(list) {
 }
 
 // ===========================
-// CONTROLS - GUEST
+// GUEST CONTROLS
 // ===========================
-let guestMicOn = true, guestCamOn = true;
-
 function guestToggleMic() {
   if (!localStream) return;
   guestMicOn = !guestMicOn;
