@@ -586,8 +586,6 @@
     /* Toast above controls bar */
     #toast { bottom: 5rem; font-size: 0.85rem; padding: 0.6rem 1.2rem; max-width: 85vw; text-align: center; }
 
-    /* Screen share btn hidden on mobile (not supported well) */
-    #btn-screen { display: none; }
     /* Share button visible in controls bar on mobile */
     .mobile-only-share { display: flex !important; }
   }
@@ -1024,20 +1022,34 @@ function toggleCam() {
 
 async function toggleScreenShare() {
   if (screenStream) { stopScreenShare(); return; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+    toast('⚠️ جهازك لا يدعم مشاركة الشاشة');
+    return;
+  }
   try {
-    screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-    document.getElementById('screen-share-preview').srcObject = screenStream;
-    document.getElementById('screen-share-preview').style.display = 'block';
-    document.getElementById('screen-share-panel').style.display = 'block';
+    screenStream = await navigator.mediaDevices.getDisplayMedia({
+      video: { frameRate: { ideal: 15 } },
+      audio: false
+    });
+    const preview = document.getElementById('screen-share-preview');
+    if (preview) { preview.srcObject = screenStream; preview.style.display = 'block'; }
+    const panel = document.getElementById('screen-share-panel');
+    if (panel) panel.style.display = 'block';
     document.getElementById('btn-screen').classList.add('active');
     const vt = screenStream.getVideoTracks()[0];
     Object.values(calls).forEach(c => {
-      const s = c.peerConnection.getSenders().find(x => x.track && x.track.kind === 'video');
-      if (s) s.replaceTrack(vt);
+      try {
+        const s = c.peerConnection.getSenders().find(x => x.track && x.track.kind === 'video');
+        if (s) s.replaceTrack(vt);
+      } catch(e) {}
     });
     vt.onended = stopScreenShare;
     toast('🖥️ مشاركة الشاشة بدأت');
-  } catch(e) { toast('❌ تعذر مشاركة الشاشة'); }
+  } catch(e) {
+    if (e.name === 'NotAllowedError') toast('❌ رُفض الإذن لمشاركة الشاشة');
+    else if (e.name === 'NotSupportedError') toast('⚠️ جهازك لا يدعم مشاركة الشاشة');
+    else toast('❌ تعذر مشاركة الشاشة');
+  }
 }
 
 function stopScreenShare() {
