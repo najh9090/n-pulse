@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CALLING1PLAN</title>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --surface3: #22222e;
+    --accent: #6c63ff;
+    --accent2: #ff6b9d;
+    --accent3: #00d4aa;
+    --text: #f0efff;
+    --text2: #9896b8;
+    --border: rgba(108,99,255,0.2);
+    --glow: rgba(108,99,255,0.15);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ===== LANDING ===== */
+  #screen-landing {
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .logo-wrap {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    display: inline-block;
+  }
+
+  .logo::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+  }
+
+  .tagline {
+    color: var(--text2);
+    font-size: 1rem;
+    margin-top: 1.2rem;
+    letter-spacing: 0.5px;
+  }
+
+  .cards-row {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 700px;
+  }
+
+  .role-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    flex: 1;
+    min-width: 260px;
+    max-width: 300px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .role-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .role-card.admin-card::before { background: radial-gradient(circle at 50% 0%, rgba(108,99,255,0.15), transparent 60%); }
+  .role-card.guest-card::before { background: radial-gradient(circle at 50% 0%, rgba(0,212,170,0.12), transparent 60%); }
+
+  .role-card:hover { transform: translateY(-4px); border-color: rgba(108,99,255,0.5); }
+  .role-card:hover::before { opacity: 1; }
+
+  .role-icon {
+    width: 64px; height: 64px;
+    border-radius: 16px;
+    margin: 0 auto 1.2rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+
+  .admin-card .role-icon { background: rgba(108,99,255,0.15); }
+  .guest-card .role-icon { background: rgba(0,212,170,0.12); }
+
+  .role-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .role-desc {
+    font-size: 0.88rem;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* ===== ADMIN PANEL ===== */
+  #screen-admin {
+    padding: 0;
+    flex-direction: column;
+  }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .topbar-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -1px;
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  .badge-admin { background: rgba(108,99,255,0.15); color: var(--accent); border: 1px solid rgba(108,99,255,0.3); }
+  .badge-online { background: rgba(0,212,170,0.12); color: var(--accent3); border: 1px solid rgba(0,212,170,0.25); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .admin-body {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* VIDEO GRID */
+  .video-section { display: flex; flex-direction: column; gap: 1rem; }
+
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    flex: 1;
+  }
+
+  .video-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    aspect-ratio: 16/9;
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .video-tile video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+
+  .video-tile .tile-label {
+    position: absolute;
+    bottom: 10px; right: 10px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .video-tile .tile-avatar {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    background: rgba(108,99,255,0.2);
+    color: var(--accent);
+  }
+
+  /* CONTROLS */
+  .controls-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ctrl-btn {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .ctrl-btn:hover { background: var(--surface3); border-color: var(--accent); }
+  .ctrl-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+  .ctrl-btn.danger { background: rgba(255,60,80,0.15); border-color: rgba(255,60,80,0.3); color: #ff3c50; }
+  .ctrl-btn.danger:hover { background: #ff3c50; color: white; }
+
+  .ctrl-btn span { font-size: 0.6rem; position: absolute; bottom: -20px; white-space: nowrap; color: var(--text2); }
+
+  /* SIDEBAR */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+
+  .panel-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* LINK SHARE */
+  .link-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+    color: var(--text2);
+    word-break: break-all;
+    margin-bottom: 0.75rem;
+    font-family: 'Space Mono', monospace;
+    line-height: 1.5;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+
+  .btn:hover { background: var(--surface3); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
+  .btn-primary:hover { background: #7c74ff; }
+  .btn-success { background: rgba(0,212,170,0.15); border-color: rgba(0,212,170,0.3); color: var(--accent3); }
+  .btn-success:hover { background: rgba(0,212,170,0.25); }
+
+  /* PARTICIPANTS */
+  .participant-list { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
+
+  .participant-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px;
+    background: var(--surface2);
+    border-radius: 10px;
+    font-size: 0.88rem;
+  }
+
+  .p-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(108,99,255,0.2);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .p-name { flex: 1; font-weight: 500; }
+  .p-role { font-size: 0.72rem; color: var(--text2); }
+
+  /* ===== GUEST SCREEN ===== */
+  #screen-guest {
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .join-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .join-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+  }
+
+  .join-title { font-size: 1.4rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .join-sub { font-size: 0.88rem; color: var(--text2); margin-bottom: 2rem; line-height: 1.6; }
+
+  .field-label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .field-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field-input:focus { border-color: var(--accent); }
+
+  /* ===== MEETING SCREEN ===== */
+  #screen-meeting {
+    flex-direction: column;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 460px;
+  }
+
+  .modal-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem; }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; }
+
+  /* EMPTY STATE */
+  .empty { text-align: center; padding: 2rem; color: var(--text2); font-size: 0.88rem; }
+
+  /* SCREEN SHARE VIDEO */
+  #screen-share-preview {
+    width: 100%;
+    max-height: 200px;
+    border-radius: 12px;
+    background: #000;
+    display: none;
+    margin-bottom: 0.75rem;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* CONNECTING */
+  .connecting {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 1rem; padding: 3rem;
+    color: var(--text2);
+  }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 768px) {
+    .admin-body { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- LANDING -->
+<div id="screen-landing" class="screen active">
+  <div class="logo-wrap">
+    <div class="logo">CALLING1PLAN</div>
+    <div class="tagline">اجتماعات فورية · بدون سيرفر · من المتصفح مباشرة</div>
+  </div>
+  <div class="cards-row">
+    <div class="role-card admin-card" onclick="startAsAdmin()">
+      <div class="role-icon">👑</div>
+      <div class="role-title">أدمن</div>
+      <div class="role-desc">أنشئ اجتماعاً جديداً، شارك الرابط مع المشاركين، وتحكم في الجلسة</div>
+    </div>
+    <div class="role-card guest-card" onclick="showGuestJoin()">
+      <div class="role-icon">🙋</div>
+      <div class="role-title">مشارك</div>
+      <div class="role-desc">أدخل رابط الاجتماع أو الكود وانضم مباشرة بعد تسجيل اسمك</div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="screen-admin" class="screen">
+  <div class="topbar">
+    <div class="topbar-logo">CALLING1PLAN</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="badge badge-online"><span class="dot"></span> <span id="admin-online-count">1 متصل</span></span>
+      <span class="badge badge-admin">👑 أدمن</span>
+    </div>
+  </div>
+  <div class="admin-body">
+    <!-- LEFT: VIDEO + CONTROLS -->
+    <div class="video-section">
+      <div class="video-grid" id="admin-video-grid">
+        <div class="video-tile" id="local-tile">
+          <video id="local-video" autoplay muted playsinline></video>
+          <div class="tile-label">أنت (أدمن)</div>
+        </div>
+      </div>
+      <div class="controls-bar">
+        <div style="position:relative">
+          <button class="ctrl-btn active" id="btn-mic" onclick="toggleMic()" title="ميكروفون">🎤</button>
+        </div>
+        <div style="position:relative">
+          <button class="ctrl-btn active" id="btn-cam" onclick="toggleCam()" title="كاميرا">📷</button>
+        </div>
+        <div style="position:relative">
+          <button class="ctrl-btn" id="btn-screen" onclick="toggleScreenShare()" title="مشاركة الشاشة">🖥️</button>
+        </div>
+        <div style="position:relative">
+          <button class="ctrl-btn danger" onclick="endMeeting()" title="إنهاء">📵</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: SIDEBAR -->
+    <div class="sidebar">
+      <!-- SHARE LINK -->
+      <div class="panel">
+        <div class="panel-title">🔗 رابط الانضمام</div>
+        <div class="link-box" id="meeting-link-display">جاري التوليد...</div>
+        <button class="btn btn-primary" onclick="copyLink()" style="margin-bottom:8px">📋 نسخ الرابط</button>
+        <button class="btn btn-success" onclick="shareLink()">📤 مشاركة الرابط</button>
+      </div>
+
+      <!-- SCREEN SHARE PREVIEW -->
+      <div class="panel" id="screen-share-panel" style="display:none">
+        <div class="panel-title">🖥️ مشاركة الشاشة</div>
+        <video id="screen-share-preview" autoplay muted></video>
+        <button class="btn danger" onclick="stopScreenShare()" style="background:rgba(255,60,80,0.1);border-color:rgba(255,60,80,0.3);color:#ff3c50">⏹️ إيقاف المشاركة</button>
+      </div>
+
+      <!-- PARTICIPANTS -->
+      <div class="panel" style="flex:1">
+        <div class="panel-title">👥 المشاركون</div>
+        <div class="participant-list" id="participants-list">
+          <div class="participant-item">
+            <div class="p-avatar">أ</div>
+            <div>
+              <div class="p-name">أنت</div>
+              <div class="p-role">أدمن · منظم الاجتماع</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GUEST JOIN -->
+<div id="screen-guest" class="screen">
+  <div class="join-card">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div class="logo" style="font-size:1.6rem">CALLING1PLAN</div>
+    </div>
+    <div class="join-title">انضم للاجتماع</div>
+    <div class="join-sub">أدخل اسمك ورمز الاجتماع للانضمام</div>
+    <label class="field-label">اسمك</label>
+    <input class="field-input" type="text" id="guest-name" placeholder="مثال: محمد السالم" />
+    <label class="field-label">رمز الاجتماع</label>
+    <input class="field-input" type="text" id="guest-room-code" placeholder="أدخل الرمز..." style="font-family:'Space Mono',monospace" />
+    <button class="btn btn-primary" onclick="joinMeeting()" style="margin-top:0.5rem">🚀 انضم الآن</button>
+    <button class="btn" onclick="showScreen('screen-landing')" style="margin-top:8px">← رجوع</button>
+  </div>
+</div>
+
+<!-- GUEST MEETING -->
+<div id="screen-meeting" class="screen">
+  <div class="topbar">
+    <div class="topbar-logo">CALLING1PLAN</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="badge badge-online"><span class="dot"></span> <span id="meeting-online-count">متصل</span></span>
+      <span id="guest-name-badge" class="badge" style="background:rgba(0,212,170,0.1);color:var(--accent3);border:1px solid rgba(0,212,170,0.25)"></span>
+    </div>
+  </div>
+  <div class="admin-body">
+    <div class="video-section">
+      <div class="video-grid" id="guest-video-grid">
+        <div class="video-tile" id="guest-local-tile">
+          <video id="guest-local-video" autoplay muted playsinline></video>
+          <div class="tile-label" id="guest-local-label">أنت</div>
+        </div>
+        <div class="video-tile connecting" id="guest-connecting" style="display:none">
+          <div class="spinner"></div>
+          <div>جاري الاتصال بالأدمن...</div>
+        </div>
+      </div>
+      <div class="controls-bar">
+        <button class="ctrl-btn active" id="guest-btn-mic" onclick="guestToggleMic()">🎤</button>
+        <button class="ctrl-btn active" id="guest-btn-cam" onclick="guestToggleCam()">📷</button>
+        <button class="ctrl-btn danger" onclick="leaveMeeting()">📵</button>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="panel">
+        <div class="panel-title">ℹ️ معلومات الاجتماع</div>
+        <div class="participant-item" style="margin-bottom:8px">
+          <div class="p-avatar">🖥️</div>
+          <div>
+            <div class="p-name">الاجتماع</div>
+            <div class="p-role" id="room-code-display">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel" style="flex:1">
+        <div class="panel-title">👥 المشاركون</div>
+        <div class="participant-list" id="guest-participants-list">
+          <div class="empty">انتظار الاتصال...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- page -->
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ===========================
+// STATE
+// ===========================
+let peer = null;
+let localStream = null;
+let screenStream = null;
+let isAdmin = false;
+let roomCode = '';
+let guestName = '';
+let connections = {}; // peerId -> conn
+let calls = {};       // peerId -> call
+let participants = []; // {id, name}
+let micOn = true, camOn = true;
+
+// ===========================
+// SCREENS
+// ===========================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ===========================
+// UTILS
+// ===========================
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 8; i++) {
+    if (i === 4) code += '-';
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
+function toast(msg, dur = 3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+function getInitials(name) {
+  return name.trim().split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase() || '؟';
+}
+
+function getMeetingURL() {
+  return `${location.origin}${location.pathname}?room=${roomCode}`;
+}
+
+// ===========================
+// ADMIN FLOW
+// ===========================
+async function startAsAdmin() {
+  isAdmin = true;
+  roomCode = genCode();
+
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    document.getElementById('local-video').srcObject = localStream;
+  } catch(e) {
+    toast('⚠️ لا يمكن الوصول للكاميرا/الميكروفون');
+    localStream = null;
+  }
+
+  // Init PeerJS with the room code as ID
+  const peerId = 'ADMIN-' + roomCode;
+  peer = new Peer(peerId, {
+    host: '0.peerjs.com',
+    port: 443,
+    secure: true
+  });
+
+  peer.on('open', id => {
+    const url = getMeetingURL();
+    document.getElementById('meeting-link-display').textContent = url;
+    toast('✅ الاجتماع جاهز! شارك الرابط');
+  });
+
+  peer.on('connection', conn => {
+    conn.on('open', () => {
+      // Receive guest info
+      conn.on('data', data => {
+        if (data.type === 'join') {
+          connections[conn.peer] = conn;
+          participants.push({ id: conn.peer, name: data.name });
+          updateParticipantsList();
+          updateOnlineCount();
+          // Notify all others
+          broadcastParticipants();
+          toast(`👋 ${data.name} انضم للاجتماع`);
+        }
+      });
+
+      conn.on('close', () => {
+        const p = participants.find(x => x.id === conn.peer);
+        if (p) toast(`👋 ${p.name} غادر الاجتماع`);
+        participants = participants.filter(x => x.id !== conn.peer);
+        delete connections[conn.peer];
+        if (calls[conn.peer]) calls[conn.peer].close();
+        delete calls[conn.peer];
+        // Remove video tile
+        const tile = document.getElementById('tile-' + conn.peer.replace(/[^a-zA-Z0-9]/g,''));
+        if (tile) tile.remove();
+        updateParticipantsList();
+        updateOnlineCount();
+        broadcastParticipants();
+      });
+    });
+  });
+
+  peer.on('call', call => {
+    call.answer(localStream);
+    calls[call.peer] = call;
+    call.on('stream', remoteStream => {
+      addRemoteVideoTile(call.peer, remoteStream, 'admin-video-grid');
+    });
+    call.on('close', () => {
+      const safeId = call.peer.replace(/[^a-zA-Z0-9]/g,'');
+      const tile = document.getElementById('tile-' + safeId);
+      if (tile) tile.remove();
+    });
+  });
+
+  peer.on('error', err => {
+    toast('⚠️ خطأ في الاتصال: ' + err.type);
+  });
+
+  showScreen('screen-admin');
+
+  // Check URL params for auto-fill
+  const params = new URLSearchParams(location.search);
+  if (params.get('room') && params.get('room') === roomCode) {
+    // same session
+  }
+}
+
+function broadcastParticipants() {
+  const list = participants.map(p => ({ id: p.id, name: p.name }));
+  Object.values(connections).forEach(conn => {
+    conn.send({ type: 'participants', list: [{ id: 'admin', name: 'الأدمن (منظم)' }, ...list] });
+  });
+}
+
+function updateParticipantsList() {
+  const el = document.getElementById('participants-list');
+  let html = `<div class="participant-item">
+    <div class="p-avatar">أ</div>
+    <div><div class="p-name">أنت</div><div class="p-role">أدمن · منظم الاجتماع</div></div>
+  </div>`;
+  participants.forEach(p => {
+    html += `<div class="participant-item">
+      <div class="p-avatar">${getInitials(p.name)}</div>
+      <div><div class="p-name">${p.name}</div><div class="p-role">مشارك</div></div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function updateOnlineCount() {
+  const count = participants.length + 1;
+  document.getElementById('admin-online-count').textContent = count + ' متصل';
+}
+
+function addRemoteVideoTile(peerId, stream, gridId) {
+  const safeId = peerId.replace(/[^a-zA-Z0-9]/g,'');
+  if (document.getElementById('tile-' + safeId)) return;
+  const p = participants.find(x => x.id === peerId);
+  const label = p ? p.name : 'مشارك';
+  const tile = document.createElement('div');
+  tile.className = 'video-tile';
+  tile.id = 'tile-' + safeId;
+  tile.innerHTML = `<video id="v-${safeId}" autoplay playsinline></video><div class="tile-label">${label}</div>`;
+  document.getElementById(gridId).appendChild(tile);
+  document.getElementById('v-' + safeId).srcObject = stream;
+}
+
+// ===========================
+// CONTROLS - ADMIN
+// ===========================
+function toggleMic() {
+  if (!localStream) return;
+  micOn = !micOn;
+  localStream.getAudioTracks().forEach(t => t.enabled = micOn);
+  const btn = document.getElementById('btn-mic');
+  btn.classList.toggle('active', micOn);
+  btn.textContent = micOn ? '🎤' : '🔇';
+}
+
+function toggleCam() {
+  if (!localStream) return;
+  camOn = !camOn;
+  localStream.getVideoTracks().forEach(t => t.enabled = camOn);
+  const btn = document.getElementById('btn-cam');
+  btn.classList.toggle('active', camOn);
+  btn.textContent = camOn ? '📷' : '📵';
+}
+
+async function toggleScreenShare() {
+  if (screenStream) {
+    stopScreenShare();
+    return;
+  }
+  try {
+    screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+    const preview = document.getElementById('screen-share-preview');
+    preview.srcObject = screenStream;
+    preview.style.display = 'block';
+    document.getElementById('screen-share-panel').style.display = 'block';
+    document.getElementById('btn-screen').classList.add('active');
+
+    // Replace video track in all peer calls
+    const videoTrack = screenStream.getVideoTracks()[0];
+    Object.values(calls).forEach(call => {
+      const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+      if (sender) sender.replaceTrack(videoTrack);
+    });
+
+    screenStream.getVideoTracks()[0].onended = () => stopScreenShare();
+    toast('🖥️ مشاركة الشاشة بدأت');
+  } catch(e) {
+    toast('❌ تعذر مشاركة الشاشة');
+  }
+}
+
+function stopScreenShare() {
+  if (!screenStream) return;
+  screenStream.getTracks().forEach(t => t.stop());
+  screenStream = null;
+  document.getElementById('screen-share-preview').style.display = 'none';
+  document.getElementById('screen-share-panel').style.display = 'none';
+  document.getElementById('btn-screen').classList.remove('active');
+
+  // Restore camera track
+  if (localStream) {
+    const videoTrack = localStream.getVideoTracks()[0];
+    Object.values(calls).forEach(call => {
+      const sender = call.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+      if (sender && videoTrack) sender.replaceTrack(videoTrack);
+    });
+  }
+  toast('⏹️ توقفت مشاركة الشاشة');
+}
+
+function endMeeting() {
+  Object.values(connections).forEach(c => c.send({ type: 'end' }));
+  Object.values(calls).forEach(c => c.close());
+  if (peer) peer.destroy();
+  if (localStream) localStream.getTracks().forEach(t => t.stop());
+  if (screenStream) screenStream.getTracks().forEach(t => t.stop());
+  toast('👋 تم إنهاء الاجتماع');
+  setTimeout(() => location.href = location.pathname, 1500);
+}
+
+// ===========================
+// SHARE LINK
+// ===========================
+function copyLink() {
+  const url = getMeetingURL();
+  navigator.clipboard.writeText(url).then(() => toast('✅ تم نسخ الرابط'));
+}
+
+function shareLink() {
+  const url = getMeetingURL();
+  if (navigator.share) {
+    navigator.share({ title: 'CALLING1PLAN - اجتماع', text: `انضم للاجتماع: ${roomCode}`, url });
+  } else {
+    copyLink();
+  }
+}
+
+// ===========================
+// GUEST FLOW
+// ===========================
+function showGuestJoin() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('room')) {
+    document.getElementById('guest-room-code').value = params.get('room');
+  }
+  showScreen('screen-guest');
+}
+
+async function joinMeeting() {
+  guestName = document.getElementById('guest-name').value.trim();
+  const code = document.getElementById('guest-room-code').value.trim().toUpperCase();
+
+  if (!guestName) { toast('⚠️ أدخل اسمك أولاً'); return; }
+  if (!code) { toast('⚠️ أدخل رمز الاجتماع'); return; }
+
+  roomCode = code;
+  document.getElementById('room-code-display').textContent = roomCode;
+  document.getElementById('guest-name-badge').textContent = guestName;
+  document.getElementById('guest-local-label').textContent = guestName;
+
+  showScreen('screen-meeting');
+  document.getElementById('guest-connecting').style.display = 'flex';
+
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    document.getElementById('guest-local-video').srcObject = localStream;
+  } catch(e) {
+    toast('⚠️ الكاميرا/الميكروفون غير متاح');
+    localStream = null;
+  }
+
+  const guestPeerId = 'GUEST-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
+  peer = new Peer(guestPeerId, {
+    host: '0.peerjs.com',
+    port: 443,
+    secure: true
+  });
+
+  peer.on('open', id => {
+    const adminId = 'ADMIN-' + roomCode;
+
+    // Data connection
+    const conn = peer.connect(adminId);
+    conn.on('open', () => {
+      conn.send({ type: 'join', name: guestName });
+      document.getElementById('guest-connecting').style.display = 'none';
+      toast(`✅ انضممت للاجتماع!`);
+
+      conn.on('data', data => {
+        if (data.type === 'participants') {
+          updateGuestParticipants(data.list);
+        }
+        if (data.type === 'end') {
+          toast('📵 الأدمن أنهى الاجتماع');
+          setTimeout(() => location.href = location.pathname, 2000);
+        }
+      });
+
+      conn.on('close', () => {
+        toast('⚠️ انقطع الاتصال');
+      });
+    });
+
+    conn.on('error', err => {
+      document.getElementById('guest-connecting').style.display = 'none';
+      toast('❌ لم يتم العثور على الاجتماع. تحقق من الرمز');
+    });
+
+    // Video call
+    if (localStream) {
+      const call = peer.call(adminId, localStream);
+      call.on('stream', remoteStream => {
+        addRemoteVideoTile(adminId, remoteStream, 'guest-video-grid');
+        document.getElementById('guest-connecting').style.display = 'none';
+      });
+      calls[adminId] = call;
+    }
+  });
+
+  peer.on('error', err => {
+    document.getElementById('guest-connecting').style.display = 'none';
+    toast('❌ خطأ: ' + err.type + ' — تحقق من الرمز');
+  });
+}
+
+function updateGuestParticipants(list) {
+  const el = document.getElementById('guest-participants-list');
+  const count = list.length + 1;
+  document.getElementById('meeting-online-count').textContent = count + ' متصل';
+  el.innerHTML = list.map(p => `
+    <div class="participant-item">
+      <div class="p-avatar">${getInitials(p.name)}</div>
+      <div><div class="p-name">${p.name}</div><div class="p-role">مشارك</div></div>
+    </div>`).join('');
+}
+
+// ===========================
+// CONTROLS - GUEST
+// ===========================
+let guestMicOn = true, guestCamOn = true;
+
+function guestToggleMic() {
+  if (!localStream) return;
+  guestMicOn = !guestMicOn;
+  localStream.getAudioTracks().forEach(t => t.enabled = guestMicOn);
+  const btn = document.getElementById('guest-btn-mic');
+  btn.classList.toggle('active', guestMicOn);
+  btn.textContent = guestMicOn ? '🎤' : '🔇';
+}
+
+function guestToggleCam() {
+  if (!localStream) return;
+  guestCamOn = !guestCamOn;
+  localStream.getVideoTracks().forEach(t => t.enabled = guestCamOn);
+  const btn = document.getElementById('guest-btn-cam');
+  btn.classList.toggle('active', guestCamOn);
+  btn.textContent = guestCamOn ? '📷' : '📵';
+}
+
+function leaveMeeting() {
+  if (peer) peer.destroy();
+  if (localStream) localStream.getTracks().forEach(t => t.stop());
+  toast('👋 غادرت الاجتماع');
+  setTimeout(() => location.href = location.pathname, 1000);
+}
+
+// ===========================
+// AUTO-DETECT GUEST URL
+// ===========================
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(location.search);
+  if (params.get('room')) {
+    document.getElementById('guest-room-code').value = params.get('room');
+    showScreen('screen-guest');
+  }
+});
+</script>
+</body>
+</html>
