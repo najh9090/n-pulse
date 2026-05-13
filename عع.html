@@ -499,6 +499,9 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* Hide inline share btn on desktop — sidebar handles it */
+  .mobile-only-share { display: none; }
+
   /* TOPBAR SHARE BUTTON (mobile only) */
   .topbar-share-btn {
     display: none;
@@ -585,6 +588,8 @@
 
     /* Screen share btn hidden on mobile (not supported well) */
     #btn-screen { display: none; }
+    /* Share button visible in controls bar on mobile */
+    .mobile-only-share { display: flex !important; }
   }
 
   /* Extra small phones */
@@ -652,6 +657,9 @@
         </div>
         <div style="position:relative">
           <button class="ctrl-btn" id="btn-screen" onclick="toggleScreenShare()" title="مشاركة الشاشة">🖥️</button>
+        </div>
+        <div style="position:relative" class="mobile-share-wrap">
+          <button class="ctrl-btn mobile-only-share" onclick="shareLink()" title="مشاركة الرابط">📤</button>
         </div>
         <div style="position:relative">
           <button class="ctrl-btn danger" onclick="endMeeting()" title="إنهاء">📵</button>
@@ -734,6 +742,7 @@
       <div class="controls-bar">
         <button class="ctrl-btn active" id="guest-btn-mic" onclick="guestToggleMic()">🎤</button>
         <button class="ctrl-btn active" id="guest-btn-cam" onclick="guestToggleCam()">📷</button>
+        <button class="ctrl-btn mobile-only-share" onclick="shareGuestLink()" title="مشاركة الرابط">📤</button>
         <button class="ctrl-btn danger" onclick="leaveMeeting()">📵</button>
       </div>
     </div>
@@ -1230,6 +1239,12 @@ function guestToggleCam() {
   const btn = document.getElementById('guest-btn-cam');
   btn.classList.toggle('active', guestCamOn);
   btn.textContent = guestCamOn ? '📷' : '📵';
+}
+
+function shareGuestLink() {
+  const url = getMeetingURL();
+  if (navigator.share) navigator.share({ title: 'CALLING1PLAN', url });
+  else { navigator.clipboard.writeText(url).then(() => toast('✅ تم نسخ الرابط')); }
 }
 
 function leaveMeeting() {
