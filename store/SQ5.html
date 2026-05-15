@@ -3,280 +3,177 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>متجر مود الشرطة SQ5
-</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>متجر مود الشرطة SQ5 - N-PULSE</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --gold:#C9A84C;--gold2:#E8C97A;--dark:#0A0A0A;--mid:#1A1A1A;--card:#141414;
-  --text:#F0EDE6;--muted:#888;--border:rgba(201,168,76,0.2);
-}
-body{background:var(--dark);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
-.goog-te-banner-frame,.skiptranslate iframe{display:none!important}
-body{top:0!important}
-#google_translate_element{display:none}
-
-nav{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2.5rem;border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:50;background:rgba(10,10,10,0.95);backdrop-filter:blur(10px)}
-.logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;letter-spacing:4px;color:var(--gold)}
-.logo span{color:var(--text)}
-.nav-links{display:flex;gap:2rem}
-.nav-links a{font-size:11px;letter-spacing:2px;color:var(--muted);text-decoration:none;cursor:pointer;transition:color 0.3s}
-.nav-links a:hover{color:var(--gold)}
-.nav-right{display:flex;align-items:center;gap:1rem}
-.nav-icon{color:var(--muted);font-size:20px;cursor:pointer;transition:color 0.3s}
-.nav-icon:hover{color:var(--gold)}
-
-.lang-wrapper{position:relative}
-.lang-btn{background:transparent;border:0.5px solid var(--border);color:var(--muted);padding:7px 14px;font-size:11px;letter-spacing:1px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;transition:all 0.3s}
-.lang-btn:hover{border-color:var(--gold);color:var(--gold)}
-.lang-btn i.ti-chevron-down{font-size:13px;transition:transform 0.3s}
-.lang-btn.open i.ti-chevron-down{transform:rotate(180deg)}
-.lang-dropdown{display:none;position:absolute;top:calc(100% + 6px);right:0;background:#111;border:0.5px solid var(--border);min-width:190px;z-index:200;max-height:300px;overflow-y:auto}
-.lang-dropdown.show{display:block}
-.lang-item{padding:9px 16px;font-size:12px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:10px;transition:all 0.2s;white-space:nowrap}
-.lang-item:hover{background:var(--mid);color:var(--gold)}
-.lang-item.active{color:var(--gold)}
-.lang-flag{font-size:15px}
-.lang-dropdown::-webkit-scrollbar{width:3px}
-.lang-dropdown::-webkit-scrollbar-thumb{background:var(--border)}
-
-.hero{display:grid;grid-template-columns:1fr 1fr;min-height:380px;overflow:hidden}
-.hero-left{padding:3.5rem 3rem;display:flex;flex-direction:column;justify-content:center;position:relative}
-.hero-left::after{content:'';position:absolute;right:0;top:10%;bottom:10%;width:0.5px;background:linear-gradient(to bottom,transparent,var(--gold),transparent)}
-.hero-tag{font-size:10px;letter-spacing:4px;color:var(--gold);margin-bottom:1.2rem;display:flex;align-items:center;gap:10px}
-.hero-tag::before{content:'';width:30px;height:0.5px;background:var(--gold)}
-h1{font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;line-height:1.1;letter-spacing:1px}
-h1 em{font-style:italic;color:var(--gold)}
-.hero-sub{font-size:13px;color:var(--muted);margin-top:1.2rem;line-height:1.8;max-width:300px}
-.hero-cta{display:flex;gap:12px;margin-top:2.5rem}
-.btn-primary{background:var(--gold);color:var(--dark);border:none;padding:13px 30px;font-size:11px;letter-spacing:3px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all 0.3s}
-.btn-primary:hover{background:var(--gold2);transform:translateY(-2px)}
-.btn-secondary{background:transparent;color:var(--text);border:0.5px solid rgba(240,237,230,0.25);padding:13px 30px;font-size:11px;letter-spacing:3px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.3s}
-.btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
-.hero-right{display:flex;align-items:center;justify-content:center;padding:2.5rem;position:relative}
-.hero-right::before{content:'';position:absolute;width:220px;height:220px;border-radius:50%;border:0.5px solid rgba(201,168,76,0.1);animation:pulse 4s ease-in-out infinite}
-.hero-right::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;border:0.5px solid rgba(201,168,76,0.05);animation:pulse 4s ease-in-out infinite 1s}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:0.5}50%{transform:scale(1.05);opacity:1}}
-.hero-visual{width:210px;height:280px;background:var(--card);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;z-index:1;animation:floatUp 3s ease-in-out infinite}
-@keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.hero-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 20%,rgba(201,168,76,0.1),transparent 70%)}
-.perfume-icon{font-size:80px;filter:drop-shadow(0 10px 30px rgba(201,168,76,0.4))}
-.float-label{position:absolute;bottom:0;left:0;right:0;background:rgba(201,168,76,0.12);border-top:0.5px solid var(--border);padding:9px 12px;font-size:9px;letter-spacing:3px;text-align:center;color:var(--gold)}
-.hero-stats{display:flex;gap:2.5rem;margin-top:3rem}
-.stat-num{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--gold)}
-.stat-lbl{font-size:9px;letter-spacing:2px;color:var(--muted);margin-top:2px}
-
-.section-header{display:flex;align-items:center;justify-content:space-between;padding:2rem 2.5rem 1rem}
-.section-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;letter-spacing:1px}
-.tabs{display:flex}
-.tab{background:none;border:none;border-bottom:1px solid transparent;color:var(--muted);font-size:10px;letter-spacing:2px;padding:7px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.3s}
-.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
-.tab:hover:not(.active){color:var(--text)}
-
-.products{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin:0 2.5rem 0.5rem;border:0.5px solid var(--border)}
-.product-card{background:var(--card);padding:1.4rem;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden}
-.product-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(201,168,76,0.06),transparent 60%);opacity:0;transition:opacity 0.3s}
-.product-card:hover::before{opacity:1}
-.product-card:hover{background:#181818}
-.product-img{width:100%;aspect-ratio:1;background:var(--mid);display:flex;align-items:center;justify-content:center;margin-bottom:1.2rem;position:relative;overflow:hidden;border:0.5px solid var(--border)}
-.product-emoji{font-size:44px;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)}
-.product-card:hover .product-emoji{transform:scale(1.15) rotate(-3deg)}
-.product-badge{position:absolute;top:7px;left:7px;background:var(--gold);color:var(--dark);font-size:8px;letter-spacing:2px;padding:3px 8px;font-weight:500}
-.product-brand{font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:4px}
-.product-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;margin-bottom:5px;line-height:1.3}
-.product-desc{font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6}
-.product-price{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gold)}
-.stars{font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:6px}
-
-.bottom-bar{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 2.5rem;border-top:0.5px solid var(--border);margin-top:1.5rem}
-.bottom-links{display:flex;gap:2rem}
-.bottom-links a{font-size:10px;letter-spacing:2px;color:var(--muted);text-decoration:none;transition:color 0.3s}
-.bottom-links a:hover{color:var(--gold)}
-.trust-badges{display:flex;gap:1.5rem}
-.trust{font-size:10px;letter-spacing:1px;color:var(--muted);display:flex;align-items:center;gap:5px}
-.trust i{color:var(--gold);font-size:15px}
-
-.toast{position:fixed;bottom:28px;right:28px;background:var(--gold);color:var(--dark);padding:11px 22px;font-size:12px;letter-spacing:1px;font-weight:500;transform:translateY(60px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);z-index:300}
-.toast.show{transform:translateY(0);opacity:1}
-
-@keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.product-card{animation:fadeSlideUp 0.5s ease both}
-.product-card:nth-child(1){animation-delay:.05s}
-.product-card:nth-child(2){animation-delay:.12s}
-.product-card:nth-child(3){animation-delay:.19s}
-.product-card:nth-child(4){animation-delay:.26s}
-
-@media(max-width:768px){
-  .hero{grid-template-columns:1fr}
-  .hero-right{display:none}
-  .products{grid-template-columns:repeat(2,1fr)}
-  .nav-links{display:none}
-  h1{font-size:38px}
-}
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--gold:#c9a84c;--dark:#0a0c10;--darker:#060709;--panel:#111318;--border:#1e2330;--text:#e8eaf0;--muted:#6b7280;--badge-bg:#1a1f2e;--accent:#3b82f6}
+  body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text);min-height:100vh}
+  .store-header{background:linear-gradient(160deg,#0d1018 0%,#141926 100%);border-bottom:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;gap:16px}
+  .store-logo{width:56px;height:56px;background:var(--panel);border:2px solid var(--gold);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+  .store-title{font-size:18px;font-weight:900;color:#fff;line-height:1.2}
+  .store-sub{font-size:12px;color:var(--gold);margin-top:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .verified-badge{background:#1a2e1a;color:#4ade80;font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid #2d5a2d;display:inline-flex;align-items:center;gap:4px}
+  .store-meta{margin-right:auto;text-align:center}
+  .owner-chip{font-size:12px;color:var(--muted);margin-top:6px}
+  .nav-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--panel)}
+  .tab{padding:12px 20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;font-family:'Cairo',sans-serif}
+  .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+  .tab:hover:not(.active){color:var(--text)}
+  .content{padding:20px 24px;max-width:900px;margin:0 auto}
+  .section-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+  .categories{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+  .cat-btn{background:var(--panel);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:'Cairo',sans-serif;transition:.15s}
+  .cat-btn.active,.cat-btn:hover{background:#1a1f2e;border-color:var(--gold);color:var(--gold)}
+  .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .product-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:.2s;cursor:pointer}
+  .product-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+  .product-img{height:140px;background:linear-gradient(135deg,#0f1520 0%,#1a2035 100%);display:flex;align-items:center;justify-content:center;position:relative}
+  .product-img .icon-main{font-size:52px}
+  .product-img .label-top{position:absolute;top:10px;right:10px;background:#1a2e1a;color:#4ade80;font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid #2d5a2d;font-family:'Cairo',sans-serif}
+  .product-body{padding:14px}
+  .product-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.3}
+  .product-desc{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6}
+  .product-footer{display:flex;align-items:center;justify-content:space-between}
+  .product-price{font-size:16px;font-weight:900;color:var(--gold)}
+  .price-unit{font-size:10px;color:var(--muted);font-weight:400}
+  .buy-btn{background:var(--gold);color:#000;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;transition:.15s}
+  .buy-btn:hover{background:#d4aa55;transform:scale(1.04)}
+  .info-section{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+  .info-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .info-card-title{font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .info-card p{font-size:12px;color:var(--muted);line-height:1.7}
+  .contact-btn{width:100%;margin-top:14px;background:#1a2d1a;border:1px solid #2d5a2d;color:#4ade80;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s;text-decoration:none}
+  .contact-btn:hover{background:#1f3a1f}
+  @media(max-width:500px){.info-section{grid-template-columns:1fr}.store-header{flex-wrap:wrap}}
 </style>
 </head>
 <body>
-
-<div id="google_translate_element"></div>
-
-<nav>
-  <div class="logo notranslate">MAISON<span> NOIR</span></div>
-  <div class="nav-links">
-    <a href="#">PARFUMS</a>
-    <a href="#">COLLECTION</a>
-    <a href="#">NOUVEAUTÉS</a>
-    <a href="#">ABOUT</a>
+<div class="store-header">
+  <div class="store-logo">🏪</div>
+  <div>
+    <div class="store-title">متجر مود الشرطة SQ5</div>
+    <div class="store-sub">
+      <span class="verified-badge"><i class="ti ti-shield-check"></i> موثوق</span>
+      <span>حزم داخل اللعبة · السعودية 🇸🇦</span>
+    </div>
+    <div class="owner-chip">👤 محمد بن مرشد بن اسماعيل رياني</div>
   </div>
-  <div class="nav-right">
-    <i class="ti ti-search nav-icon"></i>
-    <i class="ti ti-heart nav-icon"></i>
-    <div class="lang-wrapper notranslate" translate="no">
-      <button class="lang-btn" id="langBtn" onclick="toggleLang()">
-        <i class="ti ti-world"></i>
-        <span id="currentLang">العربية</span>
-        <i class="ti ti-chevron-down"></i>
-      </button>
-      <div class="lang-dropdown notranslate" id="langDropdown" translate="no">
-        <div class="lang-item active" onclick="setLang('ar','العربية','🇸🇦',this)"><span class="lang-flag">🇸🇦</span>العربية</div>
-        <div class="lang-item" onclick="setLang('en','English','🇬🇧',this)"><span class="lang-flag">🇬🇧</span>English</div>
-        <div class="lang-item" onclick="setLang('fr','Français','🇫🇷',this)"><span class="lang-flag">🇫🇷</span>Français</div>
-        <div class="lang-item" onclick="setLang('zh-CN','中文','🇨🇳',this)"><span class="lang-flag">🇨🇳</span>中文</div>
-        <div class="lang-item" onclick="setLang('es','Español','🇪🇸',this)"><span class="lang-flag">🇪🇸</span>Español</div>
-        <div class="lang-item" onclick="setLang('de','Deutsch','🇩🇪',this)"><span class="lang-flag">🇩🇪</span>Deutsch</div>
-        <div class="lang-item" onclick="setLang('ja','日本語','🇯🇵',this)"><span class="lang-flag">🇯🇵</span>日本語</div>
-        <div class="lang-item" onclick="setLang('ko','한국어','🇰🇷',this)"><span class="lang-flag">🇰🇷</span>한국어</div>
-        <div class="lang-item" onclick="setLang('ru','Русский','🇷🇺',this)"><span class="lang-flag">🇷🇺</span>Русский</div>
-        <div class="lang-item" onclick="setLang('tr','Türkçe','🇹🇷',this)"><span class="lang-flag">🇹🇷</span>Türkçe</div>
-        <div class="lang-item" onclick="setLang('it','Italiano','🇮🇹',this)"><span class="lang-flag">🇮🇹</span>Italiano</div>
-        <div class="lang-item" onclick="setLang('pt','Português','🇧🇷',this)"><span class="lang-flag">🇧🇷</span>Português</div>
-        <div class="lang-item" onclick="setLang('hi','हिन्दी','🇮🇳',this)"><span class="lang-flag">🇮🇳</span>हिन्दी</div>
-        <div class="lang-item" onclick="setLang('id','Indonesia','🇮🇩',this)"><span class="lang-flag">🇮🇩</span>Bahasa Indonesia</div>
-        <div class="lang-item" onclick="setLang('nl','Nederlands','🇳🇱',this)"><span class="lang-flag">🇳🇱</span>Nederlands</div>
+  <div class="store-meta">
+    <div style="font-size:11px;color:var(--muted)">منصة</div>
+    <div style="font-size:14px;font-weight:900;color:var(--gold)">N-PULSE</div>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <div class="tab active" onclick="showTab('products',this)">المنتجات</div>
+  <div class="tab" onclick="showTab('about',this)">عن المتجر</div>
+  <div class="tab" onclick="showTab('contact',this)">تواصل</div>
+</div>
+
+<div class="content">
+
+  <!-- TAB: Products -->
+  <div id="tab-products">
+    <div class="section-title">التصنيفات</div>
+    <div class="categories">
+      <div class="cat-btn active" onclick="filterCat('all',this)">الكل</div>
+      <div class="cat-btn" onclick="filterCat('military',this)">🪖 عسكرية</div>
+      <div class="cat-btn" onclick="filterCat('civilian',this)">🚗 مواطنين</div>
+      <div class="cat-btn" onclick="filterCat('other',this)">📦 أخرى</div>
+    </div>
+
+    <div class="products-grid" id="products-grid">
+
+      <!-- منتج تجريبي -->
+      <div class="product-card" data-cat="military">
+        <div class="product-img">
+          <span class="icon-main">🪖</span>
+          <span class="label-top">تجريبي</span>
+        </div>
+        <div class="product-body">
+          <div class="product-name">حزمة الأفواج العسكرية - الإصدار الأول</div>
+          <div class="product-desc">حزمة كاملة تشمل زي الأفواج العسكرية، المعدات الميدانية، ولوازم القطاعات الرسمية داخل اللعبة.</div>
+          <div class="product-footer">
+            <div>
+              <div class="product-price">مجاني <span class="price-unit">/ تجريبي</span></div>
+            </div>
+            <button class="buy-btn" onclick="window.open('https://wa.me/0533791401','_blank')">اطلب الآن</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- منتج قريباً -->
+      <div class="product-card" data-cat="civilian" style="opacity:.45;pointer-events:none">
+        <div class="product-img">
+          <span class="icon-main">🚗</span>
+        </div>
+        <div class="product-body">
+          <div class="product-name">حزمة مواطنين - كامري F1</div>
+          <div class="product-desc">ترسبنها الكامري والمركبات المدنية الفاخرة قريباً...</div>
+          <div class="product-footer">
+            <div class="product-price" style="font-size:12px;color:var(--muted)">قريباً</div>
+            <button class="buy-btn" style="opacity:.5;cursor:not-allowed">انتظر</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB: About -->
+  <div id="tab-about" style="display:none">
+    <div class="section-title">وصف المتجر</div>
+    <div class="info-section">
+      <div class="info-card">
+        <div class="info-card-title"><i class="ti ti-shield"></i> الحزم العسكرية</div>
+        <p>حزم الأفواج والقطاعات العسكرية، المعدات الميدانية، والزي الرسمي لمختلف الرتب.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-title"><i class="ti ti-car"></i> حزم المواطنين</div>
+        <p>مركبات المواطنين كالكامري وF1 والترسبنها بأعلى جودة متاحة في اللعبة.</p>
+      </div>
+      <div class="info-card" style="grid-column:1/-1">
+        <div class="info-card-title"><i class="ti ti-box"></i> حزم أخرى</div>
+        <p>محتوى متنوع يتم إضافته بشكل دوري. تابع المتجر لتكون أول من يعرف بالإضافات الجديدة.</p>
       </div>
     </div>
   </div>
-</nav>
 
-<div class="hero">
-  <div class="hero-left">
-    <div class="hero-tag notranslate">COLLECTION EXCLUSIVE 2025</div>
-    <h1 class="notranslate">L'Art du<br><em>Parfum</em><br>Rare</h1>
-    <p class="hero-sub">عحزم عسكريه قطاعات عسكريه مثل الافواج الخ 
-حزم مواطنين مركبات مواطنين ترسبنها من عبر F1 كامري الخ
-اخرى</p>
-    <div class="hero-cta">
-      <button class="btn-primary" onclick="document.querySelector('.products').scrollIntoView({behavior:'smooth'})">EXPLORER</button>
-      <button class="btn-secondary">EN SAVOIR +</button>
+  <!-- TAB: Contact -->
+  <div id="tab-contact" style="display:none">
+    <div class="section-title">بيانات التواصل</div>
+    <div class="info-card">
+      <div class="info-card-title"><i class="ti ti-user"></i> صاحب المتجر</div>
+      <p style="margin-bottom:4px">محمد بن مرشد بن اسماعيل رياني</p>
+      <p>السعودية 🇸🇦</p>
     </div>
-    <div class="hero-stats">
-      <div class="stat"><div class="stat-num notranslate">240+</div><div class="stat-lbl notranslate">FRAGRANCES</div></div>
-      <div class="stat"><div class="stat-num notranslate">18</div><div class="stat-lbl notranslate">ANNÉES</div></div>
-      <div class="stat"><div class="stat-num notranslate">60+</div><div class="stat-lbl notranslate">PAYS</div></div>
-    </div>
+    <a class="contact-btn" href="https://wa.me/+966533791401" target="_blank">
+      <i class="ti ti-brand-whatsapp" style="font-size:18px"></i>
+      تواصل عبر واتساب
+    </a>
+    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">للتوصيل والاستفسارات عبر واتساب فقط</p>
   </div>
-  <div class="hero-right">
-    <div class="hero-visual">
-      <div class="perfume-icon">🫧</div>
-      <div class="float-label notranslate">NO.7 — ÉDITION LIMITÉE</div>
-    </div>
-  </div>
+
 </div>
-
-<div class="section-header">
-  <div class="section-title">Nos Créations</div>
-  <div class="tabs notranslate" translate="no">
-    <button class="tab active" onclick="filterProducts('all',this)">TOUS</button>
-    <button class="tab" onclick="filterProducts('floral',this)">FLORAL</button>
-    <button class="tab" onclick="filterProducts('oud',this)">OUD</button>
-    <button class="tab" onclick="filterProducts('fresh',this)">FRESH</button>
-  </div>
-</div>
-
-<div class="products" id="productsGrid">
-  <div class="product-card" data-cat="oud">
-    <div class="product-img"><span class="product-emoji">🖤</span><span class="product-badge notranslate">NEW</span></div>
-    <div class="stars notranslate"></div>
-    <div class="product-brand notranslate">MAISON NOIR</div>
-    <div class="product-name notranslate">Oud Mystère</div>
-    <div class="product-desc">منتج</div>
-    <div><span class="product-price notranslate">0ريال</span></div>
-  </div>
-
-
-
-<div class="bottom-bar">
-  <div class="bottom-links">
-    <a href="#">LIVRAISON</a>
-    <a href="#">RETOURS</a>
-    <a href="#">CONTACT</a>
-    <a href="#">FAQ</a>
-  </div>
-  <div class="trust-badges">
-    <div class="trust"><i class="ti ti-shield-check"></i><span>دفع آمن</span></div>
-    <div class="trust"><i class="ti ti-award"></i><span>أصالة مضمونة</span></div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
 
 <script>
-function googleTranslateElementInit(){
-  new google.translate.TranslateElement({pageLanguage:'ar',autoDisplay:false},'google_translate_element');
-}
-</script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-<script>
-function toggleLang(){
-  const btn=document.getElementById('langBtn');
-  const dd=document.getElementById('langDropdown');
-  btn.classList.toggle('open');
-  dd.classList.toggle('show');
-}
-document.addEventListener('click',function(e){
-  if(!e.target.closest('.lang-wrapper')){
-    document.getElementById('langBtn').classList.remove('open');
-    document.getElementById('langDropdown').classList.remove('show');
-  }
-});
-function setLang(code,label,flag,el){
-  document.getElementById('currentLang').textContent=label;
-  document.querySelectorAll('.lang-item').forEach(i=>i.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('langBtn').classList.remove('open');
-  document.getElementById('langDropdown').classList.remove('show');
-  if(code==='ar'){
-    document.cookie='googtrans=;expires=Thu,01 Jan 1970 00:00:00 UTC;path=/';
-    document.cookie='googtrans=;expires=Thu,01 Jan 1970 00:00:00 UTC;path=/;domain='+location.hostname;
-    location.reload();return;
-  }
-  const val='/ar/'+code;
-  const exp=new Date(Date.now()+365*24*60*60*1000).toUTCString();
-  document.cookie='googtrans='+val+';expires='+exp+';path=/';
-  document.cookie='googtrans='+val+';expires='+exp+';path=/;domain='+location.hostname;
-  const sel=document.querySelector('.goog-te-combo');
-  if(sel){sel.value=code;sel.dispatchEvent(new Event('change'));}
-  else{location.reload();}
-  showToast(flag+' '+label);
-}
-function filterProducts(cat,tabEl){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  tabEl.classList.add('active');
-  document.querySelectorAll('.product-card').forEach(c=>{
-    if(cat==='all'||c.dataset.cat===cat){
-      c.style.display='';
-      c.style.animation='none';void c.offsetWidth;
-      c.style.animation='fadeSlideUp 0.35s ease both';
-    }else{c.style.display='none';}
+function showTab(name, el) {
+  ['products','about','contact'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = 'none';
   });
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).style.display = 'block';
+  el.classList.add('active');
 }
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);
+
+function filterCat(cat, el) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.product-card').forEach(c => {
+    c.style.display = (cat === 'all' || c.dataset.cat === cat) ? '' : 'none';
+  });
 }
 </script>
 </body>
