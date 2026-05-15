@@ -98,36 +98,11 @@
   /* ===== PRODUCTS ===== */
   .products-section { padding: 0 30px 70px; max-width: 1200px; margin: 0 auto; }
   .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-top: 40px; }
-
-  /* ===== PRODUCT CARD - uniform height ===== */
-  .product-card {
-    background: var(--dark-2);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 20px;
-    overflow: hidden;
-    transition: all 0.3s;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-  }
+  .product-card { background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; overflow: hidden; transition: all 0.3s; position: relative; display: flex; flex-direction: column; }
   .product-card:hover { border-color: rgba(255,107,0,0.3); transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
-
-  /* ===== IMAGE AREA - fixed height for all cards ===== */
-  .product-img-wrap {
-    position: relative;
-    width: 100%;
-    height: 220px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .product-img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    display: block;
-  }
+  .product-img-wrap { position: relative; width: 100%; height: 220px; overflow: hidden; flex-shrink: 0; }
+  .product-img { width: 100%; height: 220px; object-fit: cover; display: block; }
   .product-badge { position: absolute; top: 14px; right: 14px; background: var(--orange); color: white; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; z-index: 6; }
-
   .product-body { padding: 18px; display: flex; flex-direction: column; flex: 1; }
   .product-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: white; }
   .product-desc { font-size: 13px; color: #666; margin-bottom: 14px; flex: 1; }
@@ -137,6 +112,76 @@
   .price-amount { font-size: 14px; font-weight: 700; color: var(--green); }
   .whatsapp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--green); color: white; text-decoration: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; transition: all 0.3s; }
   .whatsapp-btn:hover { background: #00a844; transform: scale(1.02); }
+
+  /* ===== STORES SECTION ===== */
+  #stores { scroll-margin-top: 80px; }
+  .stores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    padding: 0 30px 70px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .store-card {
+    background: var(--dark-2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .store-card:hover {
+    border-color: rgba(255,107,0,0.4);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  }
+  .store-card-banner {
+    height: 90px;
+    background: linear-gradient(135deg, #0d1018, #1a2035);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .store-card-logo {
+    width: 66px; height: 66px;
+    border-radius: 14px;
+    border: 3px solid var(--orange);
+    object-fit: cover;
+    position: absolute;
+    bottom: -28px;
+    right: 20px;
+    background: var(--dark-3);
+  }
+  .store-card-body {
+    padding: 36px 18px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .store-card-name { font-size: 16px; font-weight: 800; color: white; margin-bottom: 4px; }
+  .store-card-type { font-size: 12px; color: var(--orange); font-weight: 600; margin-bottom: 8px; }
+  .store-card-desc { font-size: 13px; color: #666; flex: 1; line-height: 1.6; margin-bottom: 16px; }
+  .store-card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .store-verified { background: rgba(0,200,83,0.1); color: var(--green); border: 1px solid rgba(0,200,83,0.25); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .store-visit-btn {
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .store-visit-btn:hover { background: var(--orange-light); }
 
   /* ===== PUBLISH / STORE SECTIONS ===== */
   .publish-section, .store-section {
@@ -203,6 +248,7 @@
     .categories-grid { grid-template-columns: repeat(3, 1fr); }
     .stats { gap: 30px; }
     .products-section { padding: 0 16px 50px; }
+    .stores-grid { padding: 0 16px 50px; }
     .publish-section, .store-section { padding: 50px 16px; }
     .publish-form-card { padding: 24px 18px; }
   }
@@ -261,6 +307,7 @@
     <li><a href="#services">خدمات</a></li>
     <li><a href="#digital">رقمي</a></li>
     <li><a href="#other">أخرى</a></li>
+    <li><a href="#stores">🏪 المتاجر</a></li>
     <li><a href="#add">نشر إعلان</a></li>
     <li><a href="#open-store">🏪 فتح متجر</a></li>
     <li class="country-dropdown">
@@ -322,6 +369,7 @@
   <a href="#services" class="cat-card"><span class="cat-icon">🔧</span><span class="cat-name">خدمات</span></a>
   <a href="#digital" class="cat-card"><span class="cat-icon">💻</span><span class="cat-name">رقمي</span></a>
   <a href="#other" class="cat-card"><span class="cat-icon">📦</span><span class="cat-name">أخرى</span></a>
+  <a href="#stores" class="cat-card"><span class="cat-icon">🏪</span><span class="cat-name">المتاجر</span></a>
   <a href="111.html" class="cat-card"><span class="cat-icon">➕</span><span class="cat-name">نشر إعلان</span></a>
 </div>
 
@@ -332,7 +380,6 @@
 </div>
 <div class="products-section">
   <div class="products-grid">
-    <!-- Mercedes C230 -->
     <div class="product-card">
       <div class="product-badge">مستعمل</div>
       <div class="img-slider" data-index="0">
@@ -374,8 +421,6 @@
 <div id="other" class="section-title"><h2>أخرى</h2><div class="line"></div></div>
 <div class="products-section">
   <div class="products-grid">
-
-    <!-- Samsung A52 5G -->
     <div class="product-card">
       <div class="product-badge">مستعمل</div>
       <div class="img-slider" data-index="0">
@@ -400,8 +445,6 @@
         <a href="https://wa.me/971501220185" class="whatsapp-btn">💬 تواصل عبر واتساب</a>
       </div>
     </div>
-
-    <!-- iPhone SE 2020 -->
     <div class="product-card">
       <div class="product-badge">مستعمل</div>
       <div class="img-slider" data-index="0">
@@ -421,8 +464,6 @@
         <a href="https://wa.me/971501220185" class="whatsapp-btn">💬 تواصل عبر واتساب</a>
       </div>
     </div>
-
-    <!-- Samsung A50 -->
     <div class="product-card">
       <div class="product-badge">مستعمل</div>
       <div class="img-slider" data-index="0">
@@ -442,8 +483,6 @@
         <a href="https://wa.me/971501220185" class="whatsapp-btn">💬 تواصل عبر واتساب</a>
       </div>
     </div>
-
-    <!-- مجسم ايرن -->
     <div class="product-card">
       <div class="product-badge">مستعمل</div>
       <div class="img-slider" data-index="0">
@@ -463,8 +502,6 @@
         <a href="https://wa.me/971501220185" class="whatsapp-btn">💬 تواصل عبر واتساب</a>
       </div>
     </div>
-
-    <!-- طباخ Whirlpool -->
     <div class="product-card">
       <div class="product-badge">مستعمل</div>
       <div class="img-slider" data-index="0">
@@ -484,8 +521,39 @@
         <a href="https://wa.me/971501220185" class="whatsapp-btn">💬 تواصل عبر واتساب</a>
       </div>
     </div>
-
   </div>
+</div>
+
+<!-- ========== المتاجر ========== -->
+<div id="stores" class="section-title">
+  <h2>🏪 المتاجر</h2>
+  <p>تصفح المتاجر الموثوقة على منصة N-PULSE</p>
+  <div class="line"></div>
+</div>
+<div class="stores-grid">
+
+  <!-- متجر مود الشرطة SQ5 -->
+  <a href="https://n-pulse.store/store/SQ5.html" class="store-card" target="_blank">
+    <div class="store-card-banner">
+      <img
+        src="https://i.postimg.cc/XYfvj8Yz/f46226c7-b53d-475a-b89f-ace8e1c61708.jpg"
+        alt="متجر مود الشرطة SQ5"
+        class="store-card-logo"
+      >
+    </div>
+    <div class="store-card-body">
+      <div class="store-card-name">متجر مود الشرطة SQ5</div>
+      <div class="store-card-type">🪖 حزم داخل اللعبة · السعودية 🇸🇦</div>
+      <div class="store-card-desc">حزم عسكرية، قطاعات، أفواج، مركبات مواطنين كامري F1 وغيرها.</div>
+      <div class="store-card-footer">
+        <span class="store-verified">✔ موثوق</span>
+        <span class="store-visit-btn">زيارة المتجر</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- placeholder - يمكن إضافة متاجر هنا لاحقاً -->
+
 </div>
 
 <!-- ========== نشر إعلان ========== -->
@@ -583,7 +651,6 @@
 <div id="google_translate_element"></div>
 
 <script>
-// ===== IMAGE SLIDER =====
 function initSliders() {
   document.querySelectorAll('.img-slider').forEach(slider => {
     const imgs = slider.querySelectorAll('.slider-img');
@@ -613,7 +680,6 @@ function goToSlide(slider, idx) {
 }
 document.addEventListener('DOMContentLoaded', initSliders);
 
-// ===== PRODUCT IMAGES PREVIEW =====
 function previewImages(input) {
   const preview = document.getElementById('img-preview');
   preview.innerHTML = '';
@@ -637,7 +703,6 @@ function previewImages(input) {
   document.getElementById('dropzone').innerHTML = `<div style="font-size:20px;">✅</div><div style="color:var(--green);font-size:13px;margin-top:4px;">تم اختيار ${files.length} صورة</div>`;
 }
 
-// ===== SEND PRODUCT ORDER =====
 async function sendOrder() {
   const token = "8719573206:AAF5PzZBm9IVId32LaYzPLd3lgIPHxylRgI";
   const chatId = "5707206170";
@@ -649,17 +714,10 @@ async function sendOrder() {
   const desc = document.getElementById('p_desc').value || "بدون وصف";
   const fileInput = document.getElementById('p_file');
   const btn = document.getElementById('mainBtn');
-
-  if (!name || !price || !whatsapp || !fileInput.files[0]) {
-    alert("يرجى تعبئة جميع الخانات واختيار صورة واحدة على الأقل!");
-    return;
-  }
-  btn.disabled = true;
-  btn.innerText = "⏳ جاري الإرسال...";
-
+  if (!name || !price || !whatsapp || !fileInput.files[0]) { alert("يرجى تعبئة جميع الخانات واختيار صورة واحدة على الأقل!"); return; }
+  btn.disabled = true; btn.innerText = "⏳ جاري الإرسال...";
   const caption = `🚀 *طلب إعلان جديد - N-PULSE*\n\n📦 *المنتج:* ${name}\n📝 *الوصف:* ${desc}\n💰 *السعر:* ${price}\n🛠 *الحالة:* ${status}\n🌍 *البلد:* ${country}\n📱 *واتساب:* https://wa.me/${whatsapp}\n\n⚠️ يرجى مراجعة الدفع قبل النشر.`;
   const files = Array.from(fileInput.files);
-
   try {
     if (files.length === 1) {
       const formData = new FormData();
@@ -677,13 +735,9 @@ async function sendOrder() {
     }
     alert("✅ تم الإرسال بنجاح! سيتم مراجعة إعلانك قريباً.");
     location.reload();
-  } catch(err) {
-    alert("❌ فشل الإرسال: " + err.message);
-    btn.disabled = false; btn.innerText = "إرسال الطلب 🚀";
-  }
+  } catch(err) { alert("❌ فشل الإرسال: " + err.message); btn.disabled = false; btn.innerText = "إرسال الطلب 🚀"; }
 }
 
-// ===== STORE LOGO PREVIEW =====
 function previewLogo(input) {
   const preview = document.getElementById('logo-preview');
   const dz = document.getElementById('store-dropzone');
@@ -696,28 +750,20 @@ function previewLogo(input) {
   reader.readAsDataURL(input.files[0]);
 }
 
-// ===== SEND STORE REQUEST =====
 async function sendStoreRequest() {
   const token = "8719573206:AAF5PzZBm9IVId32LaYzPLd3lgIPHxylRgI";
   const chatId = "5707206170";
-  const name     = document.getElementById('s_name').value.trim();
-  const type     = document.getElementById('s_type').value.trim();
-  const owner    = document.getElementById('s_owner').value.trim();
+  const name = document.getElementById('s_name').value.trim();
+  const type = document.getElementById('s_type').value.trim();
+  const owner = document.getElementById('s_owner').value.trim();
   const whatsapp = document.getElementById('s_whatsapp').value.trim();
-  const country  = document.getElementById('s_country').value;
-  const desc     = document.getElementById('s_desc').value.trim() || "بدون وصف";
+  const country = document.getElementById('s_country').value;
+  const desc = document.getElementById('s_desc').value.trim() || "بدون وصف";
   const logoInput = document.getElementById('s_logo');
   const btn = document.getElementById('storeBtn');
-
-  if (!name || !type || !owner || !whatsapp) {
-    alert("يرجى تعبئة جميع الحقول المطلوبة!");
-    return;
-  }
-  btn.disabled = true;
-  btn.innerText = "⏳ جاري الإرسال...";
-
+  if (!name || !type || !owner || !whatsapp) { alert("يرجى تعبئة جميع الحقول المطلوبة!"); return; }
+  btn.disabled = true; btn.innerText = "⏳ جاري الإرسال...";
   const caption = `🏪 *طلب فتح متجر جديد - N-PULSE*\n\n🏬 *اسم المتجر:* ${name}\n📂 *نوع المتجر:* ${type}\n👤 *صاحب المتجر:* ${owner}\n📝 *الوصف:* ${desc}\n🌍 *البلد:* ${country}\n📱 *واتساب:* https://wa.me/${whatsapp}\n\n✅ يرجى التواصل مع العميل لإتمام إنشاء المتجر.`;
-
   try {
     if (logoInput.files[0]) {
       const formData = new FormData();
@@ -726,10 +772,7 @@ async function sendStoreRequest() {
       const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
       if (!res.ok) throw new Error((await res.json()).description);
     } else {
-      const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: chatId, text: caption, parse_mode: 'Markdown' })
-      });
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: chatId, text: caption, parse_mode: 'Markdown' }) });
       if (!res.ok) throw new Error((await res.json()).description);
     }
     alert("✅ تم إرسال طلبك بنجاح! سيتواصل معك فريقنا قريباً لإنشاء متجرك.");
@@ -737,13 +780,9 @@ async function sendStoreRequest() {
     document.getElementById('logo-preview').innerHTML = '';
     document.getElementById('store-dropzone').innerHTML = `<div style="font-size:32px;margin-bottom:8px;">🖼️</div><div style="color:#888;font-size:14px;">اضغط لرفع شعار المتجر</div><div style="color:#555;font-size:12px;margin-top:4px;">PNG, JPG, JPEG</div>`;
     btn.disabled = false; btn.innerText = "🏪 أرسل طلب فتح المتجر";
-  } catch(err) {
-    alert("❌ فشل الإرسال: " + err.message);
-    btn.disabled = false; btn.innerText = "🏪 أرسل طلب فتح المتجر";
-  }
+  } catch(err) { alert("❌ فشل الإرسال: " + err.message); btn.disabled = false; btn.innerText = "🏪 أرسل طلب فتح المتجر"; }
 }
 
-// ===== TRANSLATE =====
 function toggleLangDropdown() { document.getElementById('langDropdown').classList.toggle('show'); }
 function translatePage(langCode) {
   var select = document.querySelector('.goog-te-combo');
@@ -761,6 +800,5 @@ window.addEventListener('click', function(event) {
 });
 </script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
 </body>
 </html>
