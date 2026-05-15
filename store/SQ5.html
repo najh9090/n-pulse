@@ -47,11 +47,36 @@
   .contact-btn{width:100%;margin-top:14px;background:#1a2d1a;border:1px solid #2d5a2d;color:#4ade80;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s;text-decoration:none}
   .contact-btn:hover{background:#1f3a1f}
   @media(max-width:500px){.info-section{grid-template-columns:1fr}.store-header{flex-wrap:wrap}}
+
+  /* ── ORDER MODAL ── */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+  .modal-overlay.open{opacity:1;pointer-events:all}
+  .modal{background:#111318;border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:28px;width:100%;max-width:420px;transform:translateY(20px);transition:transform .3s;position:relative}
+  .modal-overlay.open .modal{transform:translateY(0)}
+  .modal-title{font-size:16px;font-weight:900;color:#fff;margin-bottom:4px}
+  .modal-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
+  .modal label{display:block;font-size:12px;font-weight:700;color:#999;margin-bottom:6px;margin-top:14px}
+  .modal input{width:100%;background:#1a1f2e;border:1.5px solid rgba(255,255,255,0.07);color:#fff;padding:11px 14px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:14px;outline:none;transition:.2s}
+  .modal input:focus{border-color:var(--gold);background:#1e2436}
+  .modal input::placeholder{color:#444}
+  .modal-footer{display:flex;gap:10px;margin-top:22px}
+  .modal-cancel{flex:1;background:transparent;border:1px solid rgba(255,255,255,0.1);color:#777;padding:11px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;cursor:pointer;transition:.2s}
+  .modal-cancel:hover{border-color:#555;color:#aaa}
+  .modal-send{flex:2;background:var(--gold);color:#000;border:none;padding:11px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .modal-send:hover{background:#d4aa55}
+  .modal-send:disabled{background:#333;color:#666;cursor:not-allowed}
+  .modal-close{position:absolute;top:14px;left:16px;background:none;border:none;color:#555;font-size:20px;cursor:pointer;line-height:1}
+  .modal-close:hover{color:#aaa}
+  /* toast */
+  .tst{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1f2e;border:1px solid rgba(255,255,255,0.1);color:#fff;padding:12px 24px;border-radius:50px;font-size:13px;font-weight:600;z-index:9999;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap}
+  .tst.show{transform:translateX(-50%) translateY(0)}
+  .tst.ok{border-color:#4ade80;color:#4ade80}
+  .tst.err{border-color:#f87171;color:#f87171}
 </style>
 </head>
 <body>
 <div class="store-header">
-  <div class="store-logo">🏪</div>
+  <div class="store-logo"><img src="https://i.postimg.cc/XYfvj8Yz/f46226c7-b53d-475a-b89f-ace8e1c61708.jpg"></div>
   <div>
     <div class="store-title">متجر مود الشرطة SQ5</div>
     <div class="store-sub">
@@ -99,7 +124,7 @@
             <div>
               <div class="product-price">مجاني <span class="price-unit">/ تجريبي</span></div>
             </div>
-            <button class="buy-btn" onclick="window.open('https://wa.me/0533791401','_blank')">اطلب الآن</button>
+            <button class="buy-btn" onclick="openOrderModal('حزمة الأفواج العسكرية - الإصدار الأول','مجاني')">اطلب الآن</button>
           </div>
         </div>
       </div>
@@ -149,7 +174,7 @@
       <p style="margin-bottom:4px">محمد بن مرشد بن اسماعيل رياني</p>
       <p>السعودية 🇸🇦</p>
     </div>
-    <a class="contact-btn" href="https://wa.me/+966533791401" target="_blank">
+    <a class="contact-btn" href="https://wa.me/0533791401" target="_blank">
       <i class="ti ti-brand-whatsapp" style="font-size:18px"></i>
       تواصل عبر واتساب
     </a>
@@ -158,7 +183,101 @@
 
 </div>
 
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeOrderModal()">✕</button>
+    <div class="modal-title">🛒 طلب المنتج</div>
+    <div class="modal-sub" id="modalProductName">—</div>
+    <label>اسمك الكامل *</label>
+    <input type="text" id="ord_name" placeholder="مثال: محمد علي">
+    <label>رقم واتساب *</label>
+    <input type="tel" id="ord_wa" placeholder="966XXXXXXXXX">
+    <label>ملاحظات (اختياري)</label>
+    <input type="text" id="ord_note" placeholder="أي تفاصيل إضافية...">
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="closeOrderModal()">إلغاء</button>
+      <button class="modal-send" id="sendBtn" onclick="sendOrderToTelegram()">
+        <span id="sendSpinnerTxt">إرسال الطلب 🚀</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="tst" id="tst"></div>
+
 <script>
+const TG_TOKEN = "8719573206:AAF5PzZBm9IVId32LaYzPLd3lgIPHxylRgI";
+const TG_CHAT  = "5707206170";
+
+let _currentProduct = '';
+let _currentPrice   = '';
+
+function openOrderModal(productName, price) {
+  _currentProduct = productName;
+  _currentPrice   = price;
+  document.getElementById('modalProductName').textContent = '📦 ' + productName + ' — السعر: ' + price;
+  document.getElementById('ord_name').value = '';
+  document.getElementById('ord_wa').value   = '';
+  document.getElementById('ord_note').value = '';
+  document.getElementById('orderModal').classList.add('open');
+}
+
+function closeOrderModal() {
+  document.getElementById('orderModal').classList.remove('open');
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('tst');
+  t.textContent = msg;
+  t.className = 'tst ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+async function sendOrderToTelegram() {
+  const name  = document.getElementById('ord_name').value.trim();
+  const wa    = document.getElementById('ord_wa').value.trim();
+  const note  = document.getElementById('ord_note').value.trim() || 'لا يوجد';
+  const btn   = document.getElementById('sendBtn');
+  const txt   = document.getElementById('sendSpinnerTxt');
+
+  if (!name || !wa) {
+    showToast('⚠️ يرجى تعبئة الاسم والواتساب', 'err');
+    return;
+  }
+
+  btn.disabled = true;
+  txt.textContent = 'جاري الإرسال...';
+
+  const msg =
+    `🛒 *طلب جديد - متجر مود الشرطة SQ5*\n\n` +
+    `📦 *المنتج:* ${_currentProduct}\n` +
+    `💰 *السعر:* ${_currentPrice}\n` +
+    `👤 *الاسم:* ${name}\n` +
+    `📱 *واتساب:* https://wa.me/${wa}\n` +
+    `📝 *ملاحظات:* ${note}\n\n` +
+    `🏪 المتجر: متجر مود الشرطة SQ5 | N-PULSE`;
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TG_CHAT, text: msg, parse_mode: 'Markdown' })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.description);
+
+    showToast('✅ تم إرسال طلبك! سنتواصل معك قريباً', 'ok');
+    closeOrderModal();
+  } catch(e) {
+    showToast('❌ فشل الإرسال: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false;
+    txt.textContent = 'إرسال الطلب 🚀';
+  }
+}
+
 function showTab(name, el) {
   ['products','about','contact'].forEach(t => {
     document.getElementById('tab-' + t).style.display = 'none';
@@ -175,6 +294,11 @@ function filterCat(cat, el) {
     c.style.display = (cat === 'all' || c.dataset.cat === cat) ? '' : 'none';
   });
 }
+
+// close modal on overlay click
+document.getElementById('orderModal').addEventListener('click', function(e){
+  if(e.target === this) closeOrderModal();
+});
 </script>
 </body>
 </html>
