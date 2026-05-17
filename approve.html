@@ -8,24 +8,27 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Tajawal',sans-serif; background:#0D0D0D; color:#fff; display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px; }
-  .card { background:#161616; border:1px solid rgba(255,107,0,0.25); border-radius:24px; padding:48px 36px; max-width:460px; width:100%; text-align:center; }
-  .logo { font-size:30px; font-weight:900; color:#FF6B00; margin-bottom:6px; }
-  .subtitle { color:#555; font-size:13px; margin-bottom:36px; }
+  .card { background:#161616; border:1px solid rgba(255,107,0,0.25); border-radius:24px; padding:40px 30px; max-width:460px; width:100%; text-align:center; }
+  .logo { font-size:28px; font-weight:900; color:#FF6B00; margin-bottom:4px; }
+  .subtitle { color:#555; font-size:13px; margin-bottom:30px; }
   .spinner { width:48px; height:48px; border:3px solid rgba(255,107,0,0.15); border-top-color:#FF6B00; border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 20px; }
   @keyframes spin { to { transform:rotate(360deg); } }
-  .icon { font-size:60px; margin-bottom:16px; display:none; }
+  .icon { font-size:60px; margin-bottom:14px; display:none; }
   .msg { font-size:20px; font-weight:800; margin-bottom:8px; }
   .sub { color:#666; font-size:14px; line-height:1.7; }
-  .btn { display:inline-block; margin-top:28px; background:#FF6B00; color:white; padding:13px 30px; border-radius:12px; text-decoration:none; font-weight:700; font-size:15px; }
-  .ad-preview { background:#1f1f1f; border-radius:14px; padding:16px; margin:20px 0; text-align:right; display:none; }
-  .ad-preview img { width:100%; border-radius:10px; margin-bottom:12px; max-height:200px; object-fit:cover; }
-  .ad-name { font-size:17px; font-weight:800; margin-bottom:6px; }
-  .ad-info { color:#888; font-size:13px; line-height:1.8; }
-  .actions { display:flex; gap:12px; margin-top:20px; }
-  .approve-btn { flex:1; background:#00C853; color:white; border:none; padding:14px; border-radius:12px; font-family:Tajawal,sans-serif; font-size:16px; font-weight:800; cursor:pointer; transition:.2s; }
+  .home-btn { display:inline-block; margin-top:24px; background:#FF6B00; color:white; padding:12px 28px; border-radius:12px; text-decoration:none; font-weight:700; font-size:15px; }
+  .preview { background:#1f1f1f; border-radius:14px; padding:18px; margin:20px 0; text-align:right; display:none; }
+  .preview img { width:100%; border-radius:10px; margin-bottom:14px; max-height:220px; object-fit:cover; }
+  .ad-name { font-size:18px; font-weight:800; margin-bottom:8px; color:white; }
+  .ad-info { color:#888; font-size:13px; line-height:2; }
+  .ad-info span { color:#ccc; }
+  .actions { display:flex; gap:12px; margin-top:18px; }
+  .approve-btn { flex:1; background:#00C853; color:white; border:none; padding:14px; border-radius:12px; font-family:Tajawal,sans-serif; font-size:16px; font-weight:800; cursor:pointer; }
   .approve-btn:hover { background:#00a844; }
-  .reject-btn { flex:1; background:#e74c3c; color:white; border:none; padding:14px; border-radius:12px; font-family:Tajawal,sans-serif; font-size:16px; font-weight:800; cursor:pointer; transition:.2s; }
+  .approve-btn:disabled { background:#333; cursor:not-allowed; }
+  .reject-btn { flex:1; background:#e74c3c; color:white; border:none; padding:14px; border-radius:12px; font-family:Tajawal,sans-serif; font-size:16px; font-weight:800; cursor:pointer; }
   .reject-btn:hover { background:#c0392b; }
+  .reject-btn:disabled { background:#333; cursor:not-allowed; }
 </style>
 </head>
 <body>
@@ -37,42 +40,40 @@
   <div class="msg" id="msg">جاري تحميل الإعلان...</div>
   <div class="sub" id="sub"></div>
 
-  <!-- معاينة الإعلان -->
-  <div class="ad-preview" id="adPreview">
-    <img id="adImg" src="" alt="">
+  <div class="preview" id="preview">
+    <img id="adImg" src="" alt="" onerror="this.style.display='none'">
     <div class="ad-name" id="adName"></div>
     <div class="ad-info" id="adInfo"></div>
     <div class="actions">
-      <button class="approve-btn" onclick="doAction('approve')">✅ نشر في القناة</button>
-      <button class="reject-btn" onclick="doAction('reject')">❌ رفض</button>
+      <button class="approve-btn" id="approveBtn" onclick="doApprove()">✅ نشر في القناة</button>
+      <button class="reject-btn"  id="rejectBtn"  onclick="doReject()">❌ رفض</button>
     </div>
   </div>
 
-  <a href="/" class="btn" id="homeBtn" style="display:none">🏠 العودة للموقع</a>
+  <a href="/" class="home-btn" id="homeBtn" style="display:none">🏠 العودة للموقع</a>
 </div>
 
 <script>
 var TG_TOKEN   = "8719573206:AAF5PzZBm9IVId32LaYzPLd3lgIPHxylRgI";
 var ADMIN_ID   = "5707206170";
 var CHANNEL_ID = "@N-pulse-store";
+var ad = null;
 
-var params     = new URLSearchParams(window.location.search);
-var msgId      = params.get('mid');   // message_id في محادثة الأدمن
-var chatId     = params.get('cid');   // chat_id
-
-var currentAd  = null;
+var params = new URLSearchParams(window.location.search);
+var action = params.get('action');
+var raw    = params.get('d');
 
 function showResult(icon, msg, sub) {
-  document.getElementById('spinner').style.display    = 'none';
-  document.getElementById('adPreview').style.display  = 'none';
-  document.getElementById('icon').style.display       = 'block';
-  document.getElementById('icon').textContent         = icon;
-  document.getElementById('msg').textContent          = msg;
-  document.getElementById('sub').textContent          = sub;
-  document.getElementById('homeBtn').style.display    = 'inline-block';
+  document.getElementById('spinner').style.display  = 'none';
+  document.getElementById('preview').style.display  = 'none';
+  document.getElementById('icon').style.display     = 'block';
+  document.getElementById('icon').textContent       = icon;
+  document.getElementById('msg').textContent        = msg;
+  document.getElementById('sub').textContent        = sub || '';
+  document.getElementById('homeBtn').style.display  = 'inline-block';
 }
 
-async function tgApi(method, body) {
+async function tgSend(method, body) {
   var res = await fetch("https://api.telegram.org/bot" + TG_TOKEN + "/" + method, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -81,118 +82,95 @@ async function tgApi(method, body) {
   return res.json();
 }
 
-function parseCaption(text) {
-  var get = function(key) {
-    var match = text.match(new RegExp(key + ': (.+)'));
-    return match ? match[1].trim() : '';
-  };
-  return {
-    name:      get('المنتج'),
-    category:  get('القسم'),
-    desc:      get('الوصف'),
-    price:     get('السعر'),
-    condition: get('الحالة'),
-    country:   get('البلد').replace(/[\u{1F1E6}-\u{1F1FF}]/gu, '').trim(),
-    whatsapp:  get('واتساب')
-  };
-}
-
-async function loadAd() {
-  if (!msgId || !chatId) {
-    showResult('⚠️', 'رابط غير صحيح', 'افتح الرابط من تيليجرام مباشرة');
-    return;
-  }
+async function doApprove() {
+  document.getElementById('approveBtn').disabled = true;
+  document.getElementById('rejectBtn').disabled  = true;
+  document.getElementById('approveBtn').textContent = '⏳ جاري النشر...';
 
   try {
-    // جلب معلومات الرسالة
-    var res = await tgApi('getUpdates', { limit: 100 });
-    if (!res.ok) throw new Error('فشل الاتصال');
+    var flagMap = {'الإمارات':'🇦🇪','السعودية':'🇸🇦','الأردن':'🇯🇴'};
+    var currMap = {'الإمارات':'AED','السعودية':'SAR','الأردن':'JOD'};
+    var caption =
+"✅ N-PULSE-AD\n" +
+"المنتج: " + ad.name + "\n" +
+"القسم: " + ad.category + "\n" +
+"الوصف: " + ad.desc + "\n" +
+"السعر: " + ad.price + " " + (currMap[ad.country]||'') + "\n" +
+"الحالة: " + ad.condition + "\n" +
+"البلد: " + (flagMap[ad.country]||'') + " " + ad.country + "\n" +
+"واتساب: https://wa.me/" + ad.whatsapp;
 
-    // البحث عن الرسالة بالـ ID
-    var found = null;
-    for (var update of res.result) {
-      var msg = update.message || update.channel_post;
-      if (msg && String(msg.message_id) === String(msgId)) {
-        found = msg;
-        break;
-      }
+    // نشر في القناة باستخدام file_id الصورة
+    var res = await tgSend('sendPhoto', {
+      chat_id: CHANNEL_ID,
+      photo:   ad.fileId,
+      caption: caption
+    });
+
+    if (!res.ok) throw new Error(res.description);
+
+    // إشعار للأدمن
+    await tgSend('sendMessage', {
+      chat_id: ADMIN_ID,
+      text: '✅ تم نشر إعلان "' + ad.name + '" في القناة بنجاح!'
+    });
+
+    showResult('✅', 'تم النشر في القناة!', '"' + ad.name + '" ظاهر الآن لجميع الزوار 🎉');
+  } catch(e) {
+    showResult('💥', 'فشل النشر', e.message);
+  }
+}
+
+async function doReject() {
+  document.getElementById('approveBtn').disabled = true;
+  document.getElementById('rejectBtn').disabled  = true;
+
+  await tgSend('sendMessage', {
+    chat_id: ADMIN_ID,
+    text: '❌ تم رفض إعلان "' + (ad ? ad.name : '') + '"'
+  });
+  showResult('❌', 'تم رفض الإعلان', 'لن يُنشر على الموقع');
+}
+
+async function loadFromUrl() {
+  if (!raw) { showResult('⚠️', 'رابط غير صحيح', 'افتح الرابط من تيليجرام'); return; }
+
+  try {
+    ad = JSON.parse(decodeURIComponent(raw));
+
+    // جلب رابط الصورة من تيليجرام
+    var fileRes = await fetch("https://api.telegram.org/bot" + TG_TOKEN + "/getFile?file_id=" + ad.fileId);
+    var fileData = await fileRes.json();
+    if (fileData.ok) {
+      var imgUrl = "https://api.telegram.org/file/bot" + TG_TOKEN + "/" + fileData.result.file_path;
+      document.getElementById('adImg').src = imgUrl;
     }
 
-    if (!found || !found.photo) {
-      showResult('⚠️', 'الإعلان غير موجود', 'ربما انتهت صلاحية الرابط');
-      return;
-    }
+    var flagMap = {'الإمارات':'🇦🇪','السعودية':'🇸🇦','الأردن':'🇯🇴'};
+    var currMap = {'الإمارات':'AED','السعودية':'SAR','الأردن':'JOD'};
+    document.getElementById('adName').textContent = ad.name;
+    document.getElementById('adInfo').innerHTML =
+      'القسم: <span>' + ad.category + '</span><br>' +
+      'السعر: <span>' + ad.price + ' ' + (currMap[ad.country]||'') + '</span><br>' +
+      'البلد: <span>' + (flagMap[ad.country]||'') + ' ' + ad.country + '</span><br>' +
+      'الحالة: <span>' + ad.condition + '</span><br>' +
+      'الوصف: <span>' + ad.desc + '</span><br>' +
+      'واتساب: <span>+' + ad.whatsapp + '</span>';
 
-    var ad = parseCaption(found.caption || '');
-    var fileId = found.photo[found.photo.length - 1].file_id;
+    document.getElementById('spinner').style.display  = 'none';
+    document.getElementById('msg').textContent        = 'مراجعة الإعلان';
+    document.getElementById('sub').textContent        = 'اختر الإجراء المناسب';
+    document.getElementById('preview').style.display  = 'block';
 
-    // جلب رابط الصورة
-    var fileRes = await tgApi('getFile', { file_id: fileId });
-    var imgUrl = fileRes.ok
-      ? "https://api.telegram.org/file/bot" + TG_TOKEN + "/" + fileRes.result.file_path
-      : '';
-
-    currentAd = { ad, fileId, imgUrl, caption: found.caption };
-
-    // عرض المعاينة
-    document.getElementById('spinner').style.display   = 'none';
-    document.getElementById('msg').textContent         = 'مراجعة الإعلان';
-    document.getElementById('sub').textContent         = 'اختر الإجراء المناسب';
-    document.getElementById('adPreview').style.display = 'block';
-    if (imgUrl) document.getElementById('adImg').src   = imgUrl;
-    document.getElementById('adName').textContent      = ad.name;
-    document.getElementById('adInfo').innerHTML        =
-      'القسم: ' + ad.category + '<br>' +
-      'السعر: ' + ad.price + '<br>' +
-      'البلد: ' + ad.country + '<br>' +
-      'الحالة: ' + ad.condition + '<br>' +
-      'واتساب: ' + ad.whatsapp;
+    // لو الأكشن موجود في الرابط مباشرة (زر الرفض)
+    if (action === 'reject') doReject();
 
   } catch(e) {
-    showResult('💥', 'حدث خطأ', e.message);
+    showResult('💥', 'خطأ في قراءة البيانات', e.message);
   }
 }
 
-async function doAction(action) {
-  document.querySelector('.approve-btn').disabled = true;
-  document.querySelector('.reject-btn').disabled  = true;
-
-  if (action === 'approve') {
-    try {
-      // نشر الإعلان في القناة بنفس الصورة والكابشن
-      var fd = new FormData();
-      // نرسل الصورة بالـ file_id مباشرة بدون إعادة رفع
-      var body = {
-        chat_id: CHANNEL_ID,
-        photo:   currentAd.fileId,
-        caption: currentAd.caption
-      };
-      var res = await tgApi('sendPhoto', body);
-
-      if (!res.ok) throw new Error(res.description);
-
-      // إشعار للأدمن
-      await tgApi('sendMessage', {
-        chat_id: ADMIN_ID,
-        text: '✅ تم نشر الإعلان في القناة بنجاح!\nالمنتج: ' + currentAd.ad.name
-      });
-
-      showResult('✅', 'تم النشر في القناة!', '"' + currentAd.ad.name + '" ظاهر الآن لجميع متابعي القناة والموقع');
-
-    } catch(e) {
-      showResult('💥', 'فشل النشر', e.message);
-    }
-
-  } else {
-    await tgApi('sendMessage', {
-      chat_id: ADMIN_ID,
-      text: '❌ تم رفض الإعلان\nالمنتج: ' + (currentAd ? currentAd.ad.name : '')
-    });
-    showResult('❌', 'تم رفض الإعلان', 'لن يُنشر على الموقع');
-  }
-}
-
-loadAd();
+loadFromUrl();
 </script>
 </body>
 </html>

@@ -853,19 +853,21 @@ async function sendOrder() {
     const result = await res.json();
     if (!result.ok) throw new Error(result.description);
 
-    // بعد الإرسال نحصل على message_id ونرسل رابط الموافقة
-    const msgId = result.result.message_id;
-    const approveUrl = `${SITE_URL}/approve.html?mid=${msgId}&cid=${ADMIN_ID}`;
+    // بعد الإرسال نرسل رابط الموافقة مع كل بيانات الإعلان مضمنة في الرابط
+    const fileId = result.result.photo[result.result.photo.length - 1].file_id;
+    const adData = encodeURIComponent(JSON.stringify({
+      name, price, whatsapp, country, condition, category, desc, fileId
+    }));
     await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: ADMIN_ID,
-        text: `📋 إعلان جديد بانتظار مراجعتك:\n${name}`,
+        text: `📋 إعلان جديد بانتظار مراجعتك: ${name}`,
         reply_markup: {
           inline_keyboard: [[
-            { text: '✅ مراجعة ونشر', url: approveUrl },
-            { text: '❌ رفض', url: `${SITE_URL}/approve.html?mid=${msgId}&cid=${ADMIN_ID}&action=reject` }
+            { text: '✅ موافقة - نشر في القناة', url: `${SITE_URL}/approve.html?action=approve&d=${adData}` },
+            { text: '❌ رفض', url: `${SITE_URL}/approve.html?action=reject&d=${adData}` }
           ]]
         }
       })
