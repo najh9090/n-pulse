@@ -379,7 +379,7 @@
   <div class="line"></div>
 </div>
 <div class="products-section">
-  <div class="products-grid" id="carsGrid">
+  <div class="products-grid">
     <div class="product-card">
       <div class="product-badge">مستعمل</div>
       <div class="img-slider" data-index="0">
@@ -420,7 +420,7 @@
 <!-- OTHER -->
 <div id="other" class="section-title"><h2>أخرى</h2><div class="line"></div></div>
 <div class="products-section">
-  <div class="products-grid" id="otherDynGrid">
+  <div class="products-grid">
     <div class="product-card">
       <div class="product-badge">مستعمل</div>
       <div class="img-slider" data-index="0">
@@ -594,7 +594,7 @@
       <input type="file" id="p_file" accept="image/*" multiple style="display:none" onchange="previewImages(this)">
       <div id="img-preview" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;"></div>
     </div>
-    <div class="form-group"><label>القسم</label><select id="p_category" style="width:100%;background:var(--dark-3);border:1px solid rgba(255,255,255,0.08);color:white;padding:12px 14px;border-radius:10px;font-family:Tajawal,sans-serif;font-size:14px;outline:none;"><option value="أخرى">📦 أخرى</option><option value="سيارات">🚗 سيارات</option><option value="عقارات">🏠 عقارات</option><option value="خدمات">🔧 خدمات</option><option value="رقمي">💻 رقمي</option></select></div><button class="submit-btn" id="mainBtn" onclick="sendOrder()">📤 نشر الإعلان</button>
+    <button class="submit-btn" id="mainBtn" onclick="sendOrder()">إرسال الطلب 🚀</button>
   </div>
 </section>
 
@@ -678,7 +678,7 @@ function goToSlide(slider, idx) {
   slider.querySelector('.img-slider-track').style.transform = `translateX(${idx * 100}%)`;
   slider.querySelectorAll('.slider-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
 }
-document.addEventListener('DOMContentLoaded', () => { initSliders(); loadApprovedAds(); });
+document.addEventListener('DOMContentLoaded', initSliders);
 
 function previewImages(input) {
   const preview = document.getElementById('img-preview');
@@ -703,192 +703,39 @@ function previewImages(input) {
   document.getElementById('dropzone').innerHTML = `<div style="font-size:20px;">✅</div><div style="color:var(--green);font-size:13px;margin-top:4px;">تم اختيار ${files.length} صورة</div>`;
 }
 
-// ===== الإعدادات =====
-const TG_TOKEN      = "8719573206:AAF5PzZBm9IVId32LaYzPLd3lgIPHxylRgI";
-const ADMIN_ID      = "5707206170";
-const CHANNEL_ID    = "-1003725283538";
-const SITE_URL      = "https://n-pulse.store";
-
-// ===== تحويل صورة لـ base64 =====
-function fileToBase64(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = e => res(e.target.result);
-    r.onerror = () => rej(new Error('فشل قراءة الصورة'));
-    r.readAsDataURL(file);
-  });
-}
-
-// ===== تحميل الإعلانات من القناة =====
-async function loadApprovedAds() {
-  try {
-    // جلب آخر 100 منشور من القناة العامة
-    const res = await fetch(
-      `https://api.telegram.org/bot${TG_TOKEN}/getUpdates?limit=100`
-    );
-    const data = await res.json();
-    if (!data.ok || !data.result) return;
-
-    const catMap = {'سيارات':'carsGrid','عقارات':'realGrid','خدمات':'servicesGrid','رقمي':'digitalGrid','أخرى':'otherDynGrid'};
-    const get = (text, key) => {
-      const match = text.match(new RegExp(key + ': (.+)'));
-      return match ? match[1].trim() : '';
-    };
-
-    const processed = [];
-    data.result.forEach(update => {
-      const post = update.channel_post;
-      if (!post || !post.photo) return;
-      const text = post.caption || '';
-      if (!text.includes('N-PULSE-AD')) return;
-
-      const fileId = post.photo[post.photo.length - 1].file_id;
-      processed.push({
-        name:      get(text, 'المنتج'),
-        price:     get(text, 'السعر'),
-        country:   get(text, 'البلد').replace(/[\u{1F1E6}-\u{1F1FF}]/gu, '').trim(),
-        whatsapp:  get(text, 'واتساب').replace('https://wa.me/', ''),
-        condition: get(text, 'الحالة'),
-        category:  get(text, 'القسم'),
-        desc:      get(text, 'الوصف'),
-        fileId
-      });
-    });
-
-    // جلب روابط الصور من تيليجرام
-    for (const ad of processed) {
-      if (!ad.name) continue;
-      try {
-        const fr = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/getFile?file_id=${ad.fileId}`);
-        const fd = await fr.json();
-        if (fd.ok) {
-          ad.images = [`https://api.telegram.org/file/bot${TG_TOKEN}/${fd.result.file_path}`];
-        }
-      } catch(e) {}
-
-      const gridId = catMap[ad.category] || 'otherDynGrid';
-      const grid = document.getElementById(gridId);
-      if (!grid) continue;
-      const empty = grid.querySelector('p');
-      if (empty) empty.remove();
-      grid.insertAdjacentHTML('beforeend', buildAdCard(ad));
-    }
-
-    initSliders();
-  } catch(e) { console.warn('خطأ تحميل الإعلانات:', e); }
-}
-
-// ===== بناء كارد الإعلان =====
-function buildAdCard(ad, imgBasePath) {
-  const flagMap = {'الإمارات':'🇦🇪','السعودية':'🇸🇦','الأردن':'🇯🇴'};
-  const currMap = {'الإمارات':'AED','السعودية':'SAR','الأردن':'JOD'};
-  const statusIcon = {'جديد':'✨','مستعمل':'🔄','خدمة':'🔧'}[ad.condition] || '';
-  // رابط الصورة مباشرة من تيليجرام
-  const imgUrl = ad.images ? ad.images[0] : `https://api.telegram.org/bot${TG_TOKEN}/getFile?file_id=${ad.fileId}`;
-  return `<div class="product-card">
-    <div class="product-badge">${statusIcon} ${ad.condition||''}</div>
-    <div class="img-slider" data-index="0" data-total="1">
-      <div class="img-slider-track">
-        <img src="${imgUrl}" alt="${ad.name}" class="slider-img" onerror="this.src='https://via.placeholder.com/400x220/1f1f1f/FF6B00?text=N-PULSE'">
-      </div>
-      <div class="slider-dots"></div>
-    </div>
-    <div class="product-body">
-      <div class="product-title">${ad.name}</div>
-      <div class="product-desc">${ad.desc||''}</div>
-      <div class="price-grid">
-        <div class="price-row">
-          <span class="price-country">${flagMap[ad.country]||'🌍'} ${ad.country}</span>
-          <span class="price-amount">${ad.price} ${currMap[ad.country]||''}</span>
-        </div>
-      </div>
-      <a href="https://wa.me/${ad.whatsapp}" class="whatsapp-btn" target="_blank">💬 تواصل عبر واتساب</a>
-    </div>
-  </div>`;
-}
-
-// ===== إرسال الإعلان للمراجعة =====
 async function sendOrder() {
-  const name      = document.getElementById('p_name').value.trim();
-  const price     = document.getElementById('p_price').value.trim();
-  const whatsapp  = document.getElementById('p_whatsapp').value.trim();
-  const country   = document.getElementById('p_country').value;
-  const condition = document.getElementById('p_status').value;
-  const category  = document.getElementById('p_category').value;
-  const desc      = document.getElementById('p_desc').value.trim() || 'بدون وصف';
+  const token = "8719573206:AAF5PzZBm9IVId32LaYzPLd3lgIPHxylRgI";
+  const chatId = "5707206170";
+  const name = document.getElementById('p_name').value;
+  const price = document.getElementById('p_price').value;
+  const whatsapp = document.getElementById('p_whatsapp').value;
+  const country = document.getElementById('p_country').value;
+  const status = document.getElementById('p_status').value;
+  const desc = document.getElementById('p_desc').value || "بدون وصف";
   const fileInput = document.getElementById('p_file');
-  const btn       = document.getElementById('mainBtn');
-
-  if (!name || !price || !whatsapp || !fileInput.files[0]) {
-    alert('يرجى تعبئة جميع الخانات واختيار صورة على الأقل!');
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerText = '⏳ جاري الإرسال...';
-
+  const btn = document.getElementById('mainBtn');
+  if (!name || !price || !whatsapp || !fileInput.files[0]) { alert("يرجى تعبئة جميع الخانات واختيار صورة واحدة على الأقل!"); return; }
+  btn.disabled = true; btn.innerText = "⏳ جاري الإرسال...";
+  const caption = `🚀 *طلب إعلان جديد - N-PULSE*\n\n📦 *المنتج:* ${name}\n📝 *الوصف:* ${desc}\n💰 *السعر:* ${price}\n🛠 *الحالة:* ${status}\n🌍 *البلد:* ${country}\n📱 *واتساب:* https://wa.me/${whatsapp}\n\n⚠️ يرجى مراجعة الدفع قبل النشر.`;
+  const files = Array.from(fileInput.files);
   try {
-    const files = Array.from(fileInput.files);
-    const flagMap = {'الإمارات':'🇦🇪','السعودية':'🇸🇦','الأردن':'🇯🇴'};
-
-    // الكابشن — يحتوي على كل البيانات بصيغة خاصة يقرأها الموقع بعد الموافقة
-    const caption =
-`N-PULSE-AD ✅
-المنتج: ${name}
-القسم: ${category}
-الوصف: ${desc}
-السعر: ${price}
-الحالة: ${condition}
-البلد: ${flagMap[country]||''} ${country}
-واتساب: https://wa.me/${whatsapp}`;
-
-    // إرسال الصورة للأدمن أولاً بدون أزرار
-    const formData = new FormData();
-    formData.append('chat_id', ADMIN_ID);
-    formData.append('photo', files[0]);
-    formData.append('caption', caption);
-    const res = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, {
-      method: 'POST', body: formData
-    });
-    const result = await res.json();
-    if (!result.ok) throw new Error(result.description);
-
-    // بعد الإرسال نرسل رابط الموافقة مع كل بيانات الإعلان مضمنة في الرابط
-    const fileId = result.result.photo[result.result.photo.length - 1].file_id;
-    const adData = encodeURIComponent(JSON.stringify({
-      name, price, whatsapp, country, condition, category, desc, fileId
-    }));
-    await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: ADMIN_ID,
-        text: `📋 إعلان جديد بانتظار مراجعتك: ${name}`,
-        reply_markup: {
-          inline_keyboard: [[
-            { text: '✅ موافقة - نشر في القناة', url: `${SITE_URL}/approve.html?action=approve&d=${adData}` },
-            { text: '❌ رفض', url: `${SITE_URL}/approve.html?action=reject&d=${adData}` }
-          ]]
-        }
-      })
-    });
-
-    // إرسال باقي الصور للأدمن إن وجدت
-    for (let i = 1; i < files.length; i++) {
-      const fd = new FormData();
-      fd.append('chat_id', ADMIN_ID);
-      fd.append('photo', files[i]);
-      await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+    if (files.length === 1) {
+      const formData = new FormData();
+      formData.append('chat_id', chatId); formData.append('photo', files[0]);
+      formData.append('caption', caption); formData.append('parse_mode', 'Markdown');
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
+      if (!res.ok) throw new Error((await res.json()).description);
+    } else {
+      const mediaGroup = files.map((f, i) => ({ type: 'photo', media: `attach://photo${i}`, ...(i === 0 ? { caption, parse_mode: 'Markdown' } : {}) }));
+      const formData = new FormData();
+      formData.append('chat_id', chatId); formData.append('media', JSON.stringify(mediaGroup));
+      files.forEach((f, i) => formData.append(`photo${i}`, f));
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendMediaGroup`, { method: 'POST', body: formData });
+      if (!res.ok) throw new Error((await res.json()).description);
     }
-
-    alert('✅ تم إرسال إعلانك للمراجعة!\nسيظهر على الموقع فور موافقة الإدارة 🎉');
+    alert("✅ تم الإرسال بنجاح! سيتم مراجعة إعلانك قريباً.");
     location.reload();
-
-  } catch(err) {
-    alert('❌ حدث خطأ: ' + err.message);
-    btn.disabled = false;
-    btn.innerText = '📤 نشر الإعلان';
-  }
+  } catch(err) { alert("❌ فشل الإرسال: " + err.message); btn.disabled = false; btn.innerText = "إرسال الطلب 🚀"; }
 }
 
 function previewLogo(input) {
